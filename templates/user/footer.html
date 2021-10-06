@@ -1,0 +1,47 @@
+        <!--- <div class="layui-bg-gray" style="padding: 30px;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-panel">
+                        <div style="padding: 25px 30px; text-align: center">&copy;2021 - {{ now_year }} 一页纸 版权所有.</div>
+                    </div>
+                </div>
+            </div>
+        </div> --->
+        
+        <div style="position: absolute; bottom: 0; width: 100%;">
+            <div class="layui-panel">
+                <div style="text-align: center">&copy;2021 - {{ now_year }} 一页纸 版权所有.</div>
+            </div>
+        </div>
+        
+        {% if select_virtual_machine != '' %}
+            <script type="text/javascript" src="../static/layui/layui.js"></script>
+            
+            <script type="text/javascript">
+                layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element'], function() {
+                    var laydate = layui.laydate
+                    ,laypage = layui.laypage
+                    ,layer = layui.layer
+                    ,table = layui.table
+                    ,carousel = layui.carousel
+                    ,upload = layui.upload
+                    ,element = layui.element;
+                });
+            </script>
+            
+            <script type="text/javascript" src="../static/axios.js"></script>
+        {% endif %}
+        
+        {% if information %}
+            <script>
+            	layui.use("layer", function(){
+                    var layer = layui.layer;
+                    
+                    layer.open({
+                        content:"{{ information }}"
+                    });
+            	});
+            </script>
+        {% endif %}
+    </body>
+</html>

@@ -1,0 +1,83 @@
+{%include 'management/header.html' %}
+        <table class="layui-hide" id="table" lay-filter="table"></table>
+        
+        <script type="text/html" id="bar">
+            <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="reset_password">重置密码</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+        </script>
+        
+        <script type="text/javascript" src="../static/layui/layui.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        
+        <script type="text/javascript">
+            layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element'], function() {
+                var laydate = layui.laydate
+                ,laypage = layui.laypage
+                ,layer = layui.layer
+                ,table = layui.table
+                ,carousel = layui.carousel
+                ,upload = layui.upload
+                ,element = layui.element;
+            });
+        </script>
+        
+        <script>
+            layui.use('table', function(){
+                var table = layui.table;
+                
+                table.render({
+                    elem: '#table'
+                    ,cols: [[
+                        {field: 'username', title: '帐号', width: 270}
+                        ,{field: 'password', title: '密码(MD5)', width: 300}
+                        ,{field: 'qq_number', title: 'QQ帐号', width: 270, sort: true}
+                        ,{field: 'register_date', title: '注册日期', width: 270, sort: true}
+                        ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 140}
+                    ]]
+                    ,data:[{{ data | safe }}]
+                    ,page: true
+                });
+                
+                table.on('tool(table)', function(obj){
+                    let event = obj.event,
+                    username = obj.data['username'];
+                    if (event == 'reset_password') {
+                        layer.prompt({
+                            formType: 0
+                            ,title: '输入框(新密码)'
+                        }, function(value, index){
+                            let data = {
+                                'action': 'reset_password',
+                                'username': username,
+                                'password': value
+                            };
+                            layer.close(index);
+                            axios.post('{{ now_url }}', data)
+                                .then(function(response){
+                                    layer.msg(response['data']);
+                                    setTimeout(
+                                        function() { 
+                                            location.reload();
+                                        },
+                                    3000);
+                            });
+                        });
+                    } else {
+                        let data = {
+                            'action': 'delete',
+                            'username': username
+                        };
+                        axios.post('{{ now_url }}', data)
+                            .then(function(response){
+                                layer.msg(response['data']);
+                                setTimeout(
+                                    function() { 
+                                        location.reload();
+                                    },
+                                3000);
+                        });
+                    }
+                });
+            });
+        </script>
+{%include 'management/footer.html' %}

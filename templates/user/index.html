@@ -1,0 +1,82 @@
+{%include 'user/header.html' %}
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">状态</li>
+                <li>修改</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    
+                    <div class="layui-bg-gray" style="padding: 30px;">
+                        <div class="layui-row layui-col-space15">
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">用户名</div>
+                                    <div class="layui-card-body">{{ username }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">密码</div>
+                                    <div class="layui-card-body">{{ password }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">QQ帐号</div>
+                                    <div class="layui-card-body">{{ qq_number }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">注册日期</div>
+                                    <div class="layui-card-body">{{ register_date }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">虚拟机数量</div>
+                                    <div class="layui-card-body">{{ virtual_machine_number }}</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="layui-tab-item">
+                    
+                    <form class="layui-form layui-form-pane" method="post">
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" autocomplete="off" placeholder="新密码" class="layui-input">
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">QQ帐号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="qq_number" lay-verify="required" autocomplete="off" placeholder="QQ帐号" class="layui-input" value="{{ qq_number }}">
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="submit" class="layui-btn" lay-submit="">修改</button>
+                            </div>
+                        </div>
+                        
+                    </form>
+                    
+                </div>
+          </div>
+        </div>
+{%include 'user/footer.html' %}

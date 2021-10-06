@@ -1,0 +1,14 @@
+flask
+flask_cors
+hashlib
+multiprocessing
+psutil
+wmi
+pythoncom
+#datetime
+#time
+#os
+#json
+#subprocess
+#platform
+#threading

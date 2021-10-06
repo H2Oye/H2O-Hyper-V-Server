@@ -1,0 +1,94 @@
+{%include 'management/header.html' %}
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">状态</li>
+                <li>修改</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    
+                    <div class="layui-bg-gray" style="padding: 30px;">
+                        <div class="layui-row layui-col-space15">
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">CPU核心</div>
+                                    <div class="layui-card-body">{{ cpu }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">运行内存</div>
+                                    <div class="layui-card-body">{{ memory }} GB</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">硬盘空间</div>
+                                    <div class="layui-card-body">{{ ram }} GB</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">操作系统</div>
+                                    <div class="layui-card-body">{{ operating_system }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">运行时间</div>
+                                    <div class="layui-card-body">{{ running_time }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">虚拟机数量</div>
+                                    <div class="layui-card-body">{{ virtual_machine_number }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">分配虚拟机数量</div>
+                                    <div class="layui-card-body">{{ distribution_virtual_machine_number }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layui-col-md3">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">用户数量</div>
+                                    <div class="layui-card-body">{{ user_number }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="layui-tab-item">
+                    
+                    <form class="layui-form layui-form-pane" method="post">
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" lay-verify="required" autocomplete="off" placeholder="新密码" class="layui-input">
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="submit" class="layui-btn" lay-submit="">修改</button>
+                            </div>
+                        </div>
+                        
+                    </form>
+                    
+                </div>
+          </div>
+        </div>
+{%include 'management/footer.html' %}

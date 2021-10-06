@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+ 	<head>
+ 		<meta charset="utf-8">
+ 		<title>{{ title }} - {{ subtitle }}</title>
+ 		<meta name="keywords" content="{{ keyword }}">
+ 		<meta name="description" content="{{ description }}">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+        <link href="../static/index/main.css" rel="stylesheet"/>
+        <link href="../static/index/bootstrap.min.css" rel="stylesheet"/>
+    </head>
+	<body>
+        <div id="background" class="phone_not"></div>
+        
+        <div id="mlogin_center">
+            <div id="mlogin_left">
+                
+                <div id="mlogin_left_context" class="phone_not">
+                    <h3>公告</h3>
+                    {% for notice_count in notice %}
+                        <p>{{ notice_count }}</p>
+                    {% endfor %}
+                </div>
+                
+                <p class="mlogin_context_footer">
+                  <span>&copy;2021 - {{ now_year }} 一页纸 版权所有.</span>
+                </p>
+                
+                <div id="mlogin_right">
+                    <div id="mlogin_view">
+                        <h4>{{ type_text }}</h4>
+                        <p>{{ information }}</p>
+                        <div id="mlogin_form">
+                            <form method="post">
+                                <p>帐号</p>
+                                <input name="username" type="text" class="minput" placeholder="帐号"/>
+                                
+                                <p>密码</p>
+                                <input name="password" type="password" class="minput" placeholder="密码"/>
+                                
+                                {% if type_name == 'register' %}
+                                    <p>QQ帐号</p>
+                                    <input name="qq_number" type="text" class="minput" placeholder="QQ帐号"/>
+                                {% endif %}
+                                
+                                <button name="{{ type_name }}" class="mbutton">{{ type_text }}</button>
+                            </form>
+                            
+                            <a href="../{{ want_type_name }}" class="mlogin_forge">{{ want_type_text }}</a>
+                        </div>
+                        <p class="mlogin_context_footer phone">
+                            <span>&copy;2021 - {{ now_year }} 一页纸 版权所有.</span>
+                        </p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </body>
+</html>

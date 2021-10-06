@@ -1,0 +1,121 @@
+{%include 'user/header.html' %}
+        <table class="layui-hide" id="table" lay-filter="table"></table>
+        
+        <script type="text/html" id="bar">
+            <a class="layui-btn layui-btn-xs" lay-event="start">开机</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="shutdown">关机</a>
+            <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="restart">重启</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="checkpoint">检查点</a>
+        </script>
+        
+        <script type="text/javascript" src="../static/layui/layui.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        
+        <script type="text/javascript">
+            layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element'], function() {
+                var laydate = layui.laydate
+                ,laypage = layui.laypage
+                ,layer = layui.layer
+                ,table = layui.table
+                ,carousel = layui.carousel
+                ,upload = layui.upload
+                ,element = layui.element;
+            });
+        </script>
+        
+        <script>
+            layui.use('table', function(){
+                var table = layui.table;
+                
+                table.render({
+                    elem: '#table'
+                    ,cols: [[
+                        {field: 'name', title: '名称', width: 270}
+                        ,{field: 'state', title: '状态', width: 210, sort: true}
+                        ,{field: 'uptime', title: '运行时间', width: 270, sort: true}
+                        ,{field: 'due_date', title: '到期日期', width: 270, sort: true}
+                        ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 230}
+                    ]]
+                    ,data:[{{ data | safe }}]
+                    ,page: true
+                });
+                
+                table.on('tool(table)', function(obj){
+                    let event = obj.event,
+                    name = obj.data['name'];
+                    if (event == 'start') {
+                        let data = {
+                            'action': 'start',
+                            'name': name
+                        };
+                        axios.post('{{ now_url }}', data)
+                            .then(function(response){
+                                layer.msg(response['data']);
+                                setTimeout(
+                                    function() { 
+                                        location.reload();
+                                    },
+                                3000);
+                        });
+                    } else if (event == 'shutdown') {
+                        let data = {
+                            'action': 'shutdown',
+                            'name': name
+                        };
+                        axios.post('{{ now_url }}', data)
+                            .then(function(response){
+                                layer.msg(response['data']);
+                                setTimeout(
+                                    function() { 
+                                        location.reload();
+                                    },
+                                3000);
+                        });
+                    } else if (event == 'restart') {
+                        let data = {
+                            'action': 'restart',
+                            'name': name
+                        };
+                        axios.post('{{ now_url }}', data)
+                            .then(function(response){
+                                layer.msg(response['data']);
+                                setTimeout(
+                                    function() { 
+                                        location.reload();
+                                    },
+                                3000);
+                        });
+                    } else {
+                        if (obj.data.state == '关机') {
+                            let data = {
+                                'action': 'get_checkpoint',
+                                'name': obj.data.name
+                            };
+                            axios.post('{{ now_url }}', data)
+                            .then(function(response){
+                                layer.prompt({
+                                    formType: 2
+                                    ,title: '输入框(已列出所有检查点名称,保留需要恢复的检查点名称)'
+                                    ,value: response['data']
+                                    ,area: ['250px', '300px']
+                                }, function(value, index){
+                                    let apply_data = {
+                                        'action': 'apply_checkpoint',
+                                        'name': name,
+                                        'checkpoint_name': value
+                                    };
+                                    layer.close(index);
+                                    axios.post('{{ now_url }}', apply_data)
+                                    .then(function(response){
+                                        layer.msg(response['data']);
+                                    });
+                                });
+                            });
+                        } else {
+                            layer.msg('请先关机');
+                        }
+                    }
+                });
+            });
+        </script>
+{%include 'user/footer.html' %}
