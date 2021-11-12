@@ -6,7 +6,7 @@ from modular import core, user, virtual_machine, auxiliary, hyper_v
 USER_APP = Blueprint('USER_APP', __name__)
 
 @USER_APP.route('/user/')
-def redirect_distinguisher():
+def redirect_d():
     return redirect('./index')
 
 @USER_APP.route('/user/index', methods=['GET', 'POST'])
@@ -40,7 +40,7 @@ def index():
     )
 
 @USER_APP.route('/user/virtual_machine', methods=['GET', 'POST'])
-def virtual_machine_distinguisher():
+def virtual_machine_d():
     username = session.get('username')
     checkpoint_information = ''
     if request.method == 'POST':

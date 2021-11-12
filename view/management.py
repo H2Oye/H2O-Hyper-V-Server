@@ -11,7 +11,7 @@ import datetime
 MANAGEMENT_APP = Blueprint('MANAGEMENT_APP', __name__)
 
 @MANAGEMENT_APP.route('/management/')
-def redirect_distinguisher():
+def redirect_d():
     return redirect('./index')
     
 @MANAGEMENT_APP.route('/management/index', methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def index():
     )
 
 @MANAGEMENT_APP.route('/management/virtual_machine', methods=['GET', 'POST'])
-def virtual_machine_distinguisher():
+def virtual_machine_d():
     checkpoint_information = ''
     if request.method == 'POST':
         parameter = core.get_request_parameter(request)
@@ -106,7 +106,7 @@ def virtual_machine_distinguisher():
     )
 
 @MANAGEMENT_APP.route('/management/user', methods=['GET', 'POST'])
-def user_distinguisher():
+def user_d():
     if request.method == 'POST':
         parameter = core.get_request_parameter(request)
         action = parameter.get('action')
@@ -138,7 +138,7 @@ def user_distinguisher():
     )
 
 @MANAGEMENT_APP.route('/management/core', methods=['GET', 'POST'])
-def core_distinguisher():
+def core_d():
     information = ''
     if request.method == 'POST':
         parameter = core.get_request_parameter(request)
