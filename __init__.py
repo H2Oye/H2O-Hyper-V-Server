@@ -1,5 +1,9 @@
 # encoding = utf-8
 
+from gevent.pywsgi import WSGIServer
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, session, request, redirect
 import datetime
 from flask_cors import CORS
@@ -45,4 +49,5 @@ if __name__ == '__main__':
     thread = threading.Thread(target=check)
     thread.setDaemon(True)
     thread.start()
-    APP.run(host='0.0.0.0', port=core.get_core('port'), processes=True, ssl_context=('./ssl.crt', './ssl.key'))
+    #APP.run(host='0.0.0.0', port=core.get_core('port'), processes=True, ssl_context=('./ssl.crt', './ssl.key'))
+    WSGIServer(('0.0.0.0', core.get_core('port')), APP, keyfile='./ssl.key', certfile='./ssl.crt').serve_forever()
