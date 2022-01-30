@@ -1,4 +1,5 @@
-# encoding = utf-8
+# -*- coding: utf-8 -*-
+# Author: XiaoXinYo
 
 from modular import core, auxiliary, hyper_v
 import time

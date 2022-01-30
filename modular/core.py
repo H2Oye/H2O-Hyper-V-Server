@@ -1,4 +1,5 @@
-# encoding = utf-8
+# -*- coding: utf-8 -*-
+# Author: XiaoXinYo
 
 from flask import make_response
 from modular import auxiliary

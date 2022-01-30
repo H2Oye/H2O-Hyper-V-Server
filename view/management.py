@@ -1,4 +1,5 @@
-# encoding = utf-8
+# -*- coding: utf-8 -*-
+# Author: XiaoXinYo
 
 from flask import Blueprint, redirect, render_template, request, session
 from modular import core, auxiliary, hyper_v, virtual_machine, user
