@@ -5,43 +5,41 @@ from modular import core
 from modular import auxiliary, virtual_machine
 import time
 
-def existence(username):
-    return username in get()
+def existence(account_number):
+    return account_number in get()
 
-def register(username, password, qq_number):
+def register(account_number, password, qq_number):
     data = get()
     password = auxiliary.get_md5(password)
-    data[username] = {
+    data[account_number] = {
         'password': password,
         'qq_number': qq_number,
-        'register_timestamp': time.time()
+        'register_timestamp': int(time.time())
     }
     core.write('user', data)
 
-def set(username, key, value):
+def set(account_number, key, value):
     data = get()
-    if key == 'password':
-        value = auxiliary.get_md5(value)
-    data[username][key] = value
+    data[account_number][key] = value
     core.write('user', data)
 
-def delete(username):
-    virtual_machine_data = virtual_machine.get_user(username)
+def delete(account_number):
+    virtual_machine_data = virtual_machine.get_use_user(account_number)
     for virtual_machine_data_count in virtual_machine_data:
-        virtual_machine.set(virtual_machine_data_count, 'username', '')
-        virtual_machine.set(virtual_machine_data_count, 'due_timestamp', '')
+        virtual_machine.set(virtual_machine_data_count, 'account_number', '未分配')
+        virtual_machine.set(virtual_machine_data_count, 'due_timestamp', '永久')
     user_data = get()
-    del user_data[username]
+    del user_data[account_number]
     core.write('user', user_data)
 
-def get_password(username):
-    return get().get(username).get('password')
+def get_password(account_number):
+    return get().get(account_number).get('password')
 
-def get_register_date(username):
-    return auxiliary.timestamp_to_date(get().get(username).get('register_timestamp'))
+def get_register_date(account_number):
+    return auxiliary.timestamp_to_date(get().get(account_number).get('register_timestamp'))
 
-def get_qq_number(username):
-    return get().get(username).get('qq_number')
+def get_qq_number(account_number):
+    return get().get(account_number).get('qq_number')
 
 def get():
     return core.read('user')

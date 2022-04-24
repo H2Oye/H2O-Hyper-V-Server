@@ -23,6 +23,12 @@ def empty(variable):
         return True
     return False
 
+def empty_many(*variable):
+	for variable_count in variable:
+		if empty(variable_count):
+			return True
+	return False
+
 def get_md5(text):
     data = hashlib.md5()
     data.update(text.encode('utf-8'))

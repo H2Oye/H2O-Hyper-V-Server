@@ -7,7 +7,7 @@ monkey.patch_all()
 
 from flask import Flask, session, request, redirect
 import datetime
-from flask_cors import CORS
+import flask_cors
 from view.index import INDEX_APP
 from view.management import MANAGEMENT_APP
 from view.user import USER_APP
@@ -17,20 +17,28 @@ import datetime
 import time
 
 APP = Flask(__name__)
-APP.config['SECRET_KEY'] = 'y3mha918zrpeduezovm5vtks'
+APP.config['SECRET_KEY'] = 'h2o_hyper_v'
 APP.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
-CORS(APP, resources=r'/*')
+flask_cors.CORS(APP, resources=r'/*')
 APP.register_blueprint(INDEX_APP)
 APP.register_blueprint(MANAGEMENT_APP)
 APP.register_blueprint(USER_APP)
 
+@APP.errorhandler(404)
+def errorhandler_404(error):
+    return '未找到文件'
+
+@APP.errorhandler(500)
+def errorhandler_500(error):
+    return '未知错误'
+
 @APP.before_request
 def before_request():
-    username = session.get('username')
+    account_number = session.get('account_number')
     url = request.path.split('/')
-    if username != 'admin' and url[1] == 'manage':
+    if account_number != 'admin' and url[1] == 'management':
         return redirect('../login')
-    elif (not username or username == 'admin') and url[1] == 'user':
+    elif (not account_number or account_number == 'admin') and url[1] == 'user':
         return redirect('../login')
 
 def check():
@@ -41,14 +49,17 @@ def check():
             hyper_v_data = hyper_v.get()
             for virtual_machine_data_count in virtual_machine_data:
                 if virtual_machine_data_count in hyper_v_data:
-                    if virtual_machine.due(virtual_machine_data_count):
+                    if virtual_machine.is_due(virtual_machine_data_count):
                         hyper_v.shutdown(virtual_machine_data_count)
                     time.sleep(10)
         time.sleep(30)
 
-if __name__ == '__main__':
+def initialization():
     thread = threading.Thread(target=check)
     thread.setDaemon(True)
     thread.start()
-    #APP.run(host='0.0.0.0', port=core.get_core('port'), processes=True, ssl_context=('./ssl.crt', './ssl.key'))
-    WSGIServer(('0.0.0.0', core.get_core('port')), APP, keyfile='./ssl.key', certfile='./ssl.crt').serve_forever()
+
+if __name__ == '__main__':
+    initialization()
+    #APP.run(host='0.0.0.0', port=core.get_core('port'), debug=True, processes=True)
+    WSGIServer(('0.0.0.0', core.get_core('port')), APP).serve_forever()

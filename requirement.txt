@@ -1,10 +1,12 @@
 flask
 flask_cors
+captcha
 hashlib
 multiprocessing
 psutil
 wmi
 pythoncom
+#io
 #datetime
 #time
 #os
@@ -12,3 +14,4 @@ pythoncom
 #subprocess
 #platform
 #threading
+#base64

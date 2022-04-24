@@ -51,10 +51,11 @@ def get_checkpoint(name):
     if information == [name]:
         information.clear()
     else:
+        information.remove(name)
         information = list(set(information))
     return information
 
-def apply_checkpoint(name,checkpoint_name):
+def apply_checkpoint(name, checkpoint_name):
     pythoncom.CoInitialize()
     CON = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
     vm = CON.Msvm_ComputerSystem(ElementName=name)

@@ -1,47 +1,83 @@
-{%include 'management/header.html' %}
-        <form class="layui-form layui-form-pane" method="post">
-            
-            <div class="layui-form-item">
-                <label class="layui-form-label">标题</label>
-                <div class="layui-input-block">
-                    <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="标题" class="layui-input" value="{{ title }}">
-                </div>
-            </div>
-            
-            <div class="layui-form-item">
-                <label class="layui-form-label">副标题</label>
-                <div class="layui-input-block">
-                    <input type="text" name="subtitle" lay-verify="required" autocomplete="off" placeholder="副标题" class="layui-input" value="{{ subtitle }}">
-                </div>
-            </div>
-            
-            <div class="layui-form-item">
-                <label class="layui-form-label">关键词</label>
-                <div class="layui-input-block">
-                    <input type="text" name="keyword" lay-verify="required" autocomplete="off" placeholder="关键词" class="layui-input" value="{{ keyword }}">
-                </div>
-            </div>
-            
-            <div class="layui-form-item">
-                <label class="layui-form-label">描述</label>
-                <div class="layui-input-block">
-                    <input type="text" name="description" lay-verify="required" autocomplete="off" placeholder="描述" class="layui-input" value="{{ description }}">
-                </div>
-            </div>
-            
-            <div class="layui-form-item layui-form-text">
-                <label class="layui-form-label">公告(\n代表换行)</label>
-                <div class="layui-input-block">
-                    <textarea id="notice" name="notice" placeholder="公告" class="layui-textarea"></textarea>
-                </div>
-            </div>
-            
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button type="submit" class="layui-btn" lay-submit="">修改</button>
-                </div>
-            </div>
-            
-        </form>
-        
+{%include './management/header.html' %}
+                <form class="layui-form layui-form-pane">
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="标题" class="layui-input" value="{{ title }}">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">关键词</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="keyword" lay-verify="required" autocomplete="off" placeholder="关键词" class="layui-input" value="{{ keyword }}">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="description" lay-verify="required" autocomplete="off" placeholder="描述" class="layui-input" value="{{ description }}">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">公告</label>
+                        <div class="layui-input-block">
+                            <textarea id="notice" name="notice" placeholder="公告" class="layui-textarea">{% for notice_count in notice %}{{ notice_count + '\n' }}{% endfor %}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" id="submit_button" class="layui-btn" lay-submit="" lay-filter="submit_button">修改</button>
+                        </div>
+                    </div>
+                    
+                </form>
+                
+                <script type="text/javascript">
+                    layui.use(['form'], function() {
+                        var form = layui.form;
+                        
+                        form.on('submit(submit_button)', function(data) {
+                            data = data.field;
+                            
+                            var load = layer.load(0, {shade: false}),
+                                submit_button = document.getElementById('submit_button'),
+                                title = data.title,
+                                keyword = data.keyword,
+                                description = data.description,
+                                notice = data.notice;
+                                                            
+                            submit_button.disabled = true;
+                            
+                            if (!title || !keyword || !description || !notice) {
+                                layer.close(load);
+                                layer.msg('请输入完整信息');
+                                submit_button.disabled = false;
+                            } else {
+                                let post_data = {
+                                    'action': 'revise_core',
+                                    'title': title,
+                                    'keyword': keyword,
+                                    'description': description,
+                                    'notice': notice
+                                };
+
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information, function(){
+                                            location.reload();
+                                        });
+                                        submit_button.disabled = false;
+                                });
+                            }
+                            
+                            return false;
+                        });
+                    });
+                </script>
 {%include 'management/footer.html' %}
