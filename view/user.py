@@ -84,7 +84,7 @@ def ajax():
     elif virtual_machine.is_due(name):
         return core.generate_response_json_result('该虚拟机已到期')
     elif action == 'start_virtual_machine':
-	hyper_v.start(name)
+        hyper_v.start(name)
         return core.generate_response_json_result('开机成功')
     elif action == 'shutdown_virtual_machine':
         hyper_v.shutdown(name)
