@@ -27,8 +27,8 @@ def index():
         memory_size=round(psutil.virtual_memory().total / (1024 ** 3)),
         operating_system=platform.platform(),
         virtual_machine_number=len(hyper_v.get()),
-        distribution_virtual_machine_number=len(virtual_machine.get()),
-        user_number=len(user.get()),
+        distribution_virtual_machine_number=len(core.read('virtual_machine')),
+        user_number=len(core.read('user')),
         now_year=auxiliary.get_now_year()
     )
 
@@ -96,7 +96,8 @@ def ajax():
                 'state': data_single.get('state'),
                 'uptime': data_single.get('uptime'),
                 'account_number': virtual_machine.get_account_number(data_count),
-                'due_date': virtual_machine.get_due_date(data_count)
+                'due_date': virtual_machine.get_due_date(data_count),
+                'remarks': virtual_machine.get_remarks(data_count, 'management')
             }
         return core.generate_response_json_result(information)
     elif action == 'start_virtual_machine':
@@ -115,6 +116,14 @@ def ajax():
         
         hyper_v.shutdown(name)
         return core.generate_response_json_result('关机成功')
+    elif action == 'force_shutdown_virtual_machine':
+        name = parameter.get('name')
+        
+        if auxiliary.empty(name):
+            return core.generate_response_json_result('参数错误')
+        
+        hyper_v.force_shutdown(name)
+        return core.generate_response_json_result('强制关机成功')
     elif action == 'restart_virtual_machine':
         name = parameter.get('name')
 
@@ -123,6 +132,49 @@ def ajax():
         
         hyper_v.restart(name)
         return core.generate_response_json_result('重启成功')
+    elif action == 'get_virtual_machine_checkpoint':
+        name = parameter.get('name')
+    
+        if auxiliary.empty(name):
+            return core.generate_response_json_result('参数错误')
+        
+        checkpoint_information = ''
+        checkpoint = hyper_v.get_checkpoint(name)
+        for checkpoint_count in checkpoint:
+            checkpoint_information += checkpoint_count + '\n'
+        if checkpoint_information:
+            checkpoint_information = checkpoint_information[:-1]
+        return core.generate_response_json_result(checkpoint_information)
+    elif action == 'apply_virtual_machine_checkpoint':
+        name = parameter.get('name')
+        checkpoint_name = parameter.get('checkpoint_name')
+    
+        if auxiliary.empty_many(name, checkpoint_name):
+            return core.generate_response_json_result('参数错误')
+    
+        if checkpoint_name not in hyper_v.get_checkpoint(name):
+            return core.generate_response_json_result('检查点不存在')
+        hyper_v.apply_checkpoint(name, checkpoint_name)
+        return core.generate_response_json_result('恢复检查点成功')
+    elif action == 'rename_virtual_machine':
+        old_name = parameter.get('old_name')
+        new_name = parameter.get('new_name')
+        
+        if auxiliary.empty_many(old_name, new_name):
+            return core.generate_response_json_result('参数错误')
+        
+        hyper_v.rename(old_name, new_name)
+        
+        return core.generate_response_json_result('重命名成功')
+    elif action == 'remarks_virtual_machine':
+        name = parameter.get('name')
+        content = parameter.get('content')
+        
+        if auxiliary.empty_many(name, content):
+            return core.generate_response_json_result('参数错误')
+        
+        virtual_machine.set_remarks(name, 'management', content)
+        return core.generate_response_json_result('备注成功')
     elif action == 'distribution_virtual_machine':
         name = parameter.get('name')
         account_number = parameter.get('account_number')
@@ -148,30 +200,6 @@ def ajax():
         else:
             virtual_machine.set(name ,'due_timestamp', auxiliary.date_to_timestamp(due_date))
         return core.generate_response_json_result('续费成功')
-    elif action == 'get_virtual_machine_checkpoint':
-        name = parameter.get('name')
-
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        checkpoint_information = ''
-        checkpoint = hyper_v.get_checkpoint(name)
-        for checkpoint_count in checkpoint:
-            checkpoint_information += checkpoint_count + '\n'
-        if checkpoint_information:
-            checkpoint_information = checkpoint_information[:-1]
-        return core.generate_response_json_result(checkpoint_information)
-    elif action == 'apply_virtual_machine_checkpoint':
-        name = parameter.get('name')
-        checkpoint_name = parameter.get('checkpoint_name')
-
-        if auxiliary.empty_many(name, checkpoint_name):
-            return core.generate_response_json_result('参数错误')
-
-        if checkpoint_name not in hyper_v.get_checkpoint(name):
-            return core.generate_response_json_result('检查点不存在')
-        hyper_v.apply_checkpoint(name, checkpoint_name)
-        return core.generate_response_json_result('恢复检查点成功')
     elif action == 'revise_user_password':
         account_number = parameter.get('account_number')
         new_password = parameter.get('new_password')
@@ -185,7 +213,7 @@ def ajax():
         return core.generate_response_json_result('修改成功')
     elif action == 'get_user':
         information = {}
-        data = user.get()
+        data = core.read('user')
         for data_count in data:
             data_single = data.get(data_count)
             information[data_count] = {

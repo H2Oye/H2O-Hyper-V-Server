@@ -4,6 +4,7 @@
 import subprocess
 import wmi
 import pythoncom
+from modular import virtual_machine
 
 def get():
     data = str(subprocess.check_output(['powershell.exe', 'Get-VM'], shell=True), encoding='gbk')
@@ -21,6 +22,10 @@ def get():
             }
     return information
 
+def rename(old_name, new_name):
+    subprocess.check_output(['powershell.exe', f'Rename-VM "{old_name}" "{new_name}"'], shell=True)
+    virtual_machine.rename(old_name, new_name)
+
 def start(name):
     pythoncom.CoInitialize()
     CON = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
@@ -32,6 +37,9 @@ def shutdown(name):
     CON = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
     vm = CON.Msvm_ComputerSystem(ElementName=name)
     vm[0].RequestStateChange(3)
+
+def force_shutdown(name):
+    subprocess.check_output(['powershell.exe', f'Stop-VM -Name "{name}" –Force'], shell=True)
 
 def restart(name):
     pythoncom.CoInitialize()

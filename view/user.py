@@ -71,7 +71,8 @@ def ajax():
             information[data_count] = {
                 'state': data_single.get('state'),
                 'uptime': data_single.get('uptime'),
-                'due_date': virtual_machine.get_due_date(data_count)
+                'due_date': data_single.get('due_date'),
+                'remarks':data_single.get('remarks')
             }
         return core.generate_response_json_result(information)
     
@@ -89,6 +90,9 @@ def ajax():
     elif action == 'shutdown_virtual_machine':
         hyper_v.shutdown(name)
         return core.generate_response_json_result('关机成功')
+    elif action == 'force_shutdown_virtual_machine':
+        hyper_v.force_shutdown(name)
+        return core.generate_response_json_result('强制关机成功')
     elif action == 'restart_virtual_machine':
         hyper_v.restart(name)
         return core.generate_response_json_result('重启成功')
@@ -102,8 +106,20 @@ def ajax():
         return core.generate_response_json_result(information)
     elif action == 'apply_virtual_machine_checkpoint':
         checkpoint_name = parameter.get('checkpoint_name')
+        
+        if auxiliary.empty(checkpoint_name):
+            return core.generate_response_json_result('参数错误')
+        
         if checkpoint_name not in hyper_v.get_checkpoint(name):
             return core.generate_response_json_result('检查点不存在')
         hyper_v.apply_checkpoint(name, checkpoint_name)
         return core.generate_response_json_result('恢复检查点成功')
+    elif action == 'remarks_virtual_machine':
+        content = parameter.get('content')
+        
+        if auxiliary.empty(content):
+            return core.generate_response_json_result('参数错误')
+        
+        virtual_machine.set_remarks(name, 'user', content)
+        return core.generate_response_json_result('备注成功')
     return core.generate_response_json_result('参数错误')

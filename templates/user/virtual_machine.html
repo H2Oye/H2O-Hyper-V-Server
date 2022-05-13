@@ -1,11 +1,17 @@
 {%include './user/header.html' %}
                 <table class="layui-hide" id="table" lay-filter="table"></table>
-                
+                <script type="text/html" id="tool_bar">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="refresh">刷新</button>
+                    </div>
+                </script>
                 <script type="text/html" id="bar">
                     <a class="layui-btn layui-btn-xs" lay-event="start">开机</a>
                     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="shutdown">关机</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="force_shutdown">强制关机</a>
                     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="restart">重启</a>
                     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="checkpoint">检查点</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="remarks">备注</a>
                 </script>
                 
                 <script>
@@ -25,7 +31,8 @@
                                         'name': data_count,
                                         'state': data[data_count]['state'],
                                         'uptime': data[data_count]['uptime'],
-                                        'due_date': data[data_count]['due_date']
+                                        'due_date': data[data_count]['due_date'],
+                                        'remarks': data[data_count]['remarks']
                                     });
                                 }
                                 
@@ -35,14 +42,17 @@
                                     table.render({
                                         elem: '#table'
                                         ,cols: [[
-                                            {field: 'name', title: '名称', width: 270}
-                                            ,{field: 'state', title: '状态', width: 190, sort: true}
-                                            ,{field: 'uptime', title: '运行时间', width: 270, sort: true}
-                                            ,{field: 'due_date', title: '到期日期', width: 270, sort: true}
-                                            ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 230}
+                                            {field: 'name', title: '名称', width: 190, sort: true}
+                                            ,{field: 'state', title: '状态', width: 130, sort: true}
+                                            ,{field: 'uptime', title: '运行时间', width: 180, sort: true}
+                                            ,{field: 'due_date', title: '到期日期', width: 180, sort: true}
+                                            ,{field: 'remarks', title: '备注', width: 200}
+                                            ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 360}
                                         ]]
                                         ,data: virtual_machine
+                                        ,toolbar: '#tool_bar'
                                         ,page: true
+                                        ,limit: 30
                                     });
                                 });
                                 
@@ -54,6 +64,12 @@
                     
                     layui.use('table', function() {
                         var table = layui.table;
+                        
+                        table.on('toolbar(table)', function(obj) {
+                            if (obj.event == 'refresh') {
+                                get_virtual_machine();
+                            }
+                        });
                         
                         table.on('tool(table)', function(obj) {
                             let event = obj.event,
@@ -81,6 +97,20 @@
                                     'name': name
                                 };
                     
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                });
+                            } else if (event == 'force_shutdown') {
+                                var load = layer.load(0, {shade: false});
+                                
+                                let post_data = {
+                                    'action': 'force_shutdown_virtual_machine',
+                                    'name': name
+                                };
+
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
@@ -135,6 +165,29 @@
                                 } else {
                                     layer.msg('请先关机');
                                 }
+                            } else {
+                                layer.prompt({
+                                    formType: 2
+                                    ,title: '备注'
+                                    ,value: obj.data['remarks']
+                                    ,area: ['300px', '100px']
+                                }, function(value, index){
+                                    var load = layer.load(0, {shade: false});
+                                    
+                                    let post_data = {
+                                        'action': 'remarks_virtual_machine',
+                                        'name': name,
+                                        'content': value
+                                    };
+                                    
+                                    layer.close(index);
+                                    axios.post('./ajax', post_data)
+                                    .then(function(response){
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                    });
+                                });
                             }
                         });
                     });

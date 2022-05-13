@@ -61,5 +61,5 @@ def initialization():
 
 if __name__ == '__main__':
     initialization()
-    #APP.run(host='0.0.0.0', port=core.get_core('port'), debug=True, processes=True)
-    WSGIServer(('0.0.0.0', core.get_core('port')), APP).serve_forever()
+    APP.run(host='0.0.0.0', port=core.get_core('port'), debug=True, processes=True)
+    #WSGIServer(('0.0.0.0', core.get_core('port')), APP).serve_forever()

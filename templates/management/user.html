@@ -1,6 +1,5 @@
 {%include './management/header.html' %}
         <table class="layui-hide" id="table" lay-filter="table"></table>
-        
         <script type="text/html" id="tool_bar">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm" lay-event="add_user">添加用户</button>
@@ -96,13 +95,7 @@
                                             .then(function(response) {
                                                 layer.close(load);
                                                 data = response.data.information;
-                                                if (data == '注册成功') {
-                                                    layer.alert('注册成功', function() {
-                                                        window.location.href = './login';
-                                                    });
-                                                } else {
-                                                    layer.alert(data);
-                                                }
+                                                layer.alert(data);
                                                 submit_button.disabled = false;
                                         });
                                     }
@@ -137,16 +130,21 @@
                             });
                         });
                     } else {
-                        let post_data = {
-                            'action': 'delete_user',
-                            'account_number': account_number
-                        };
-
-                        axios.post('./ajax', post_data)
-                            .then(function(response) {
-                                layer.alert(response.data.information);
-                                get_user();
-                        });
+                        layer.confirm('确定删除吗?', {
+                                btn: ['是', '否']
+                            }, function() {
+                                let post_data = {
+                                    'action': 'delete_user',
+                                    'account_number': account_number
+                                };
+                                
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.alert(response.data.information);
+                                        get_user();
+                                });
+                            }
+                        );
                     }
                 });
             });

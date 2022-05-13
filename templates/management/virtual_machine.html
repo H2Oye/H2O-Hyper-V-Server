@@ -1,201 +1,277 @@
 {%include './management/header.html' %}
-        <table class="layui-hide" id="table" lay-filter="table"></table>
-        
-        <script type="text/html" id="bar">
-            <a class="layui-btn layui-btn-xs" lay-event="start">开机</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="shutdown">关机</a>
-            <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="restart">重启</a>
-            <a class="layui-btn layui-btn-xs" lay-event="distribution">分配</a>
-            <a class="layui-btn layui-btn-xs" lay-event="set_due_date">设置到期日期</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="checkpoint">检查点</a>
-        </script>
-        
-        <script>
-            function get_virtual_machine() {
-                var load = layer.load(0, {shade: false}),
-                    virtual_machine = [];
+                <table class="layui-hide" id="table" lay-filter="table"></table>
+                <script type="text/html" id="tool_bar">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="refresh">刷新</button>
+                    </div>
+                </script>
+                <script type="text/html" id="bar">
+                    <a class="layui-btn layui-btn-xs" lay-event="start">开机</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="shutdown">关机</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="force_shutdown">强制关机</a>
+                    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="restart">重启</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="checkpoint">检查点</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="rename">重命名</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="remarks">备注</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="distribution">分配</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="set_due_date">设置到期日期</a>
+                </script>
                 
-                let post_data = {
-                    'action': 'get_virtual_machine'
-                };
-                
-                axios.post('./ajax', post_data)
-                    .then(function(response) {
-                        data = response.data.information;
-                        for (let data_count in data) {
-                            virtual_machine.push({
-                                'name': data_count,
-                                'state': data[data_count]['state'],
-                                'uptime': data[data_count]['uptime'],
-                                'account_number': data[data_count]['account_number'],
-                                'due_date': data[data_count]['due_date']
-                            });
-                        }
+                <script>
+                    function get_virtual_machine() {
+                        var load = layer.load(0, {shade: false}),
+                            virtual_machine = [];
                         
-                        layui.use('table', function() {
-                            var table = layui.table;
-                            
-                            table.render({
-                                elem: '#table'
-                                ,cols: [[
-                                    {field: 'name', title: '名称', width: 210}
-                                    ,{field: 'state', title: '状态', width: 120, sort: true}
-                                    ,{field: 'uptime', title: '运行时间', width: 160, sort: true}
-                                    ,{field: 'account_number', title: '账号', width: 180, sort: true}
-                                    ,{field: 'due_date', title: '到期日期', width: 160, sort: true}
-                                    ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 380}
-                                ]]
-                                ,data: virtual_machine
-                                ,page: true
-                            });
+                        let post_data = {
+                            'action': 'get_virtual_machine'
+                        };
+                        
+                        axios.post('./ajax', post_data)
+                            .then(function(response) {
+                                data = response.data.information;
+                                for (let data_count in data) {
+                                    virtual_machine.push({
+                                        'name': data_count,
+                                        'state': data[data_count]['state'],
+                                        'uptime': data[data_count]['uptime'],
+                                        'account_number': data[data_count]['account_number'],
+                                        'due_date': data[data_count]['due_date'],
+                                        'remarks': data[data_count]['remarks']
+                                    });
+                                }
+                                
+                                layui.use('table', function() {
+                                    var table = layui.table;
+                                    
+                                    table.render({
+                                        elem: '#table'
+                                        ,cols: [[
+                                            {field: 'name', title: '名称', width: 170, sort: true}
+                                            ,{field: 'state', title: '状态', width: 80, sort: true}
+                                            ,{field: 'uptime', title: '运行时间', width: 110, sort: true}
+                                            ,{field: 'account_number', title: '账号', width: 150, sort: true}
+                                            ,{field: 'due_date', title: '到期日期', width: 150, sort: true}
+                                            ,{field: 'remarks', title: '备注', width: 200}
+                                            ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 570}
+                                        ]]
+                                        ,data: virtual_machine
+                                        ,toolbar: '#tool_bar'
+                                        ,page: true
+                                        ,limit: 30
+                                    });
+                                });
+                                
+                                layer.close(load);
                         });
-                        
-                        layer.close(load);
-                });
-            }
-            
-            
-            get_virtual_machine();
-            
-            layui.use('table', function(){
-                var table = layui.table;
-                
-                table.on('tool(table)', function(obj) {
-                    let event = obj.event,
-                        name = obj.data['name'];
+                    }
                     
-                    if (event == 'start') {
-                        var load = layer.load(0, {shade: false});
+                    
+                    get_virtual_machine();
+                    
+                    layui.use('table', function(){
+                        var table = layui.table;
                         
-                        let post_data = {
-                            'action': 'start_virtual_machine',
-                            'name': name
-                        };
-
-                        axios.post('./ajax', post_data)
-                            .then(function(response) {
-                                layer.close(load);
-                                layer.alert(response.data.information);
+                        table.on('toolbar(table)', function(obj) {
+                            if (obj.event == 'refresh') {
                                 get_virtual_machine();
+                            }
                         });
-                    } else if (event == 'shutdown') {
-                        var load = layer.load(0, {shade: false});
-                        
-                        let post_data = {
-                            'action': 'shutdown_virtual_machine',
-                            'name': name
-                        };
 
-                        axios.post('./ajax', post_data)
-                            .then(function(response) {
-                                layer.close(load);
-                                layer.alert(response.data.information);
-                                get_virtual_machine();
-                        });
-                    } else if (event == 'restart') {
-                        var load = layer.load(0, {shade: false});
-                        
-                        let post_data = {
-                            'action': 'restart_virtual_machine',
-                            'name': name
-                        };
-
-                        axios.post('./ajax', post_data)
-                            .then(function(response) {
-                                layer.close(load);
-                                layer.alert(response.data.information);
-                                get_virtual_machine();
-                        });
-                    } else if (event == 'distribution') {
-                        let account_number = obj.data.account_number;
-
-                        if (account_number == '未分配') {
-                            account_number = '';
-                        }
-                        layer.prompt({
-                            formType: 0
-                            ,title: '输入框(账号,需取消分配则填取消分配)'
-                            ,value: account_number
-                        }, function(value, index){
-                            var load = layer.load(0, {shade: false});
+                        table.on('tool(table)', function(obj) {
+                            let event = obj.event,
+                                name = obj.data['name'];
                             
-                            let post_data = {
-                                'action': 'distribution_virtual_machine',
-                                'name': name,
-                                'account_number': value
-                            };
+                            if (event == 'start') {
+                                var load = layer.load(0, {shade: false});
+                                
+                                let post_data = {
+                                    'action': 'start_virtual_machine',
+                                    'name': name
+                                };
 
-                            layer.close(index);
-                            axios.post('./ajax', post_data)
-                                .then(function(response) {
-                                    layer.close(load);
-                                    layer.alert(response.data.information);
-                                    get_virtual_machine();
-                            });
-                        });
-                    } else if (event == 'set_due_date') {
-                        let due_date = obj.data.due_date;
-                        
-                        if (due_date == '永久') {
-                            due_date = '';
-                        }
-                        layer.prompt({
-                            formType: 0
-                            ,title: '输入框(XXXX/XX/XX,,需永久则填永久)'
-                            ,value: due_date
-                        }, function(value, index){
-                            var load = layer.load(0, {shade: false});
-                            
-                            let post_data = {
-                                'action': 'set_due_date_virtual_machine',
-                                'name': name,
-                                'due_date': value
-                            };
-                            
-                            layer.close(index);
-                            axios.post('./ajax', post_data)
-                                .then(function(response) {
-                                    layer.close(load);
-                                    layer.alert(response.data.information);
-                                    get_virtual_machine();
-                            });
-                        });
-                    } else {
-                        if (obj.data.state == '关机') {
-                            let post_data = {
-                                'action': 'get_virtual_machine_checkpoint',
-                                'name': obj.data.name
-                            };
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                });
+                            } else if (event == 'shutdown') {
+                                var load = layer.load(0, {shade: false});
+                                
+                                let post_data = {
+                                    'action': 'shutdown_virtual_machine',
+                                    'name': name
+                                };
 
-                            axios.post('./ajax', post_data)
-                            .then(function(response) {
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                });
+                            } else if (event == 'force_shutdown') {
+                                var load = layer.load(0, {shade: false});
+                                
+                                let post_data = {
+                                    'action': 'force_shutdown_virtual_machine',
+                                    'name': name
+                                };
+
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                });
+                            } else if (event == 'restart') {
+                                var load = layer.load(0, {shade: false});
+                                
+                                let post_data = {
+                                    'action': 'restart_virtual_machine',
+                                    'name': name
+                                };
+
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        get_virtual_machine();
+                                });
+                            } else if (event == 'checkpoint') {
+                                if (obj.data.state == '关机') {
+                                    let post_data = {
+                                        'action': 'get_virtual_machine_checkpoint',
+                                        'name': obj.data.name
+                                    };
+                                
+                                    axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.prompt({
+                                            formType: 2
+                                            ,title: '检查点(已列出所有检查点名称,保留需要恢复的检查点名称)'
+                                            ,value: response.data.information
+                                            ,area: ['250px', '300px']
+                                        }, function(value, index){
+                                            var load = layer.load(0, {shade: false});
+                                            
+                                            let post_data = {
+                                                'action': 'apply_virtual_machine_checkpoint',
+                                                'name': name,
+                                                'checkpoint_name': value
+                                            };
+                                
+                                            layer.close(index);
+                                            axios.post('./ajax', post_data)
+                                            .then(function(response){
+                                                layer.close(load);
+                                                layer.alert(response.data.information);
+                                            });
+                                        });
+                                    });
+                                } else {
+                                    layer.msg('请先关机');
+                                }
+                            } else if (event == 'rename') {
                                 layer.prompt({
-                                    formType: 2
-                                    ,title: '输入框(已列出所有检查点名称,保留需要恢复的检查点名称)'
-                                    ,value: response.data.information
-                                    ,area: ['250px', '300px']
+                                    formType: 0
+                                    ,title: '重命名'
+                                    ,value: name
                                 }, function(value, index){
                                     var load = layer.load(0, {shade: false});
                                     
                                     let post_data = {
-                                        'action': 'apply_virtual_machine_checkpoint',
-                                        'name': name,
-                                        'checkpoint_name': value
+                                        'action': 'rename_virtual_machine',
+                                        'old_name': name,
+                                        'new_name': value
                                     };
-
+                                
+                                    layer.close(index);
+                                    axios.post('./ajax', post_data)
+                                        .then(function(response) {
+                                            layer.close(load);
+                                            layer.alert(response.data.information);
+                                            get_virtual_machine();
+                                    });
+                                });
+                            } else if (event == 'remarks') {
+                                layer.prompt({
+                                    formType: 2
+                                    ,title: '备注'
+                                    ,value: obj.data['remarks']
+                                    ,area: ['300px', '100px']
+                                }, function(value, index){
+                                    var load = layer.load(0, {shade: false});
+                                    
+                                    let post_data = {
+                                        'action': 'remarks_virtual_machine',
+                                        'name': name,
+                                        'content': value
+                                    };
+                                    
                                     layer.close(index);
                                     axios.post('./ajax', post_data)
                                     .then(function(response){
                                         layer.close(load);
                                         layer.alert(response.data.information);
+                                        get_virtual_machine();
                                     });
                                 });
-                            });
-                        } else {
-                            layer.msg('请先关机');
-                        }
-                    }
-                });
-            });
-        </script>
+                            } else if (event == 'distribution') {
+                                let account_number = obj.data.account_number;
+
+                                if (account_number == '未分配') {
+                                    account_number = '';
+                                }
+                                layer.prompt({
+                                    formType: 0
+                                    ,title: '分配(账号,需取消分配则填取消分配)'
+                                    ,value: account_number
+                                }, function(value, index){
+                                    var load = layer.load(0, {shade: false});
+                                    
+                                    let post_data = {
+                                        'action': 'distribution_virtual_machine',
+                                        'name': name,
+                                        'account_number': value
+                                    };
+
+                                    layer.close(index);
+                                    axios.post('./ajax', post_data)
+                                        .then(function(response) {
+                                            layer.close(load);
+                                            layer.alert(response.data.information);
+                                            get_virtual_machine();
+                                    });
+                                });
+                            } else {
+                                let due_date = obj.data.due_date;
+                                
+                                if (due_date == '永久') {
+                                    due_date = '';
+                                }
+                                layer.prompt({
+                                    formType: 0
+                                    ,title: '设置到期日期(XXXX/XX/XX,,需永久则填永久)'
+                                    ,value: due_date
+                                }, function(value, index){
+                                    var load = layer.load(0, {shade: false});
+                                    
+                                    let post_data = {
+                                        'action': 'set_due_date_virtual_machine',
+                                        'name': name,
+                                        'due_date': value
+                                    };
+                                    
+                                    layer.close(index);
+                                    axios.post('./ajax', post_data)
+                                        .then(function(response) {
+                                            layer.close(load);
+                                            layer.alert(response.data.information);
+                                            get_virtual_machine();
+                                    });
+                                });
+                            }
+                        });
+                    });
+                </script>
 {%include 'management/footer.html' %}
