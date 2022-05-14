@@ -31,14 +31,18 @@
                                     <div class="layui-col-md3">
                                         <div class="layui-card">
                                             <div class="layui-card-header">密码(MD5)</div>
-                                            <div class="layui-card-body">{{ password }}</div>
+                                            <div class="layui-card-body">
+                                                <p id="password">{{ password }}</p>
+                                            </div>
                                         </div>
                                     </div>
                                     
                                     <div class="layui-col-md3">
                                         <div class="layui-card">
                                             <div class="layui-card-header">QQ帐号</div>
-                                            <div class="layui-card-body">{{ qq_number }}</div>
+                                            <div class="layui-card-body">
+                                                <p id="qq_number">{{ qq_number }}</p>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -62,8 +66,8 @@
                         </div>
                         
                         <div class="layui-tab-item">
-                            <blockquote class="layui-elem-quote">不需要修改的留空即可</blockquote>
-
+                            <blockquote class="layui-elem-quote">不需要修改的留空.</blockquote>
+                            
                             <form class="layui-form layui-form-pane">
                                 
                                 <div class="layui-form-item">
@@ -120,9 +124,11 @@
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
-                                        layer.alert(response.data.information, function(){
-                                            location.reload();
-                                        });
+                                        if (response.data.information == '修改成功') {
+                                            document.getElementById('password').innerHTML = md5(new_password);
+                                            document.getElementById('qq_number').innerHTML = new_qq_number;
+                                        }
+                                        layer.alert(response.data.information);
                                         submit_button.disabled = false;
                                 });
                             }

@@ -2,6 +2,7 @@
         <table class="layui-hide" id="table" lay-filter="table"></table>
         <script type="text/html" id="tool_bar">
             <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="refresh">刷新</button>
                 <button class="layui-btn layui-btn-sm" lay-event="add_user">添加用户</button>
             </div>
         </script>
@@ -59,7 +60,10 @@
                 var table = layui.table;
                 
                 table.on('toolbar(table)', function(obj) {
-                    if (obj.event == 'add_user') {
+                    if (obj.event == 'refresh') {
+                        get_user();
+                        layer.msg('刷新成功');
+                    } else if (obj.event == 'add_user') {
                         layer.open({
                             title: '添加用户',
                             type: 1,
@@ -97,6 +101,7 @@
                                                 data = response.data.information;
                                                 layer.alert(data);
                                                 submit_button.disabled = false;
+                                                get_user();
                                         });
                                     }
                                     
@@ -125,8 +130,10 @@
                             layer.close(index);
                             axios.post('./ajax', post_data)
                                 .then(function(response) {
+                                    if (response.data.information == '修改成功') {
+                                        obj.update({password: md5(value)});
+                                    }
                                     layer.alert(response.data.information);
-                                    get_user();
                             });
                         });
                     } else {
@@ -140,8 +147,10 @@
                                 
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
+                                        if (response.data.information == '修改成功') {
+                                            obj.del();
+                                        }
                                         layer.alert(response.data.information);
-                                        get_user();
                                 });
                             }
                         );

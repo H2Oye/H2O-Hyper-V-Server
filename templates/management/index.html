@@ -105,9 +105,7 @@
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
-                                        layer.alert(response.data.information, function(){
-                                            location.reload();
-                                        });
+                                        layer.alert(response.data.information);
                                         submit_button.disabled = false;
                                 });
                             }

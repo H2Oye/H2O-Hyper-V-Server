@@ -70,7 +70,6 @@ def ajax():
             data_single = data.get(data_count)
             information[data_count] = {
                 'state': data_single.get('state'),
-                'uptime': data_single.get('uptime'),
                 'due_date': data_single.get('due_date'),
                 'remarks':data_single.get('remarks')
             }
@@ -78,13 +77,18 @@ def ajax():
     
     name = parameter.get('name')
     vm = virtual_machine.get_use_user(account_number)
+    
     if auxiliary.empty(name):
         return core.generate_response_json_result('参数错误')
-    if name not in vm:
+    
+    if name not in hyper_v.get():
+        return core.generate_response_json_result('虚拟机不存在')
+    elif name not in vm:
         return core.generate_response_json_result('权限错误')
     elif virtual_machine.is_due(name):
         return core.generate_response_json_result('该虚拟机已到期')
-    elif action == 'start_virtual_machine':
+    
+    if action == 'start_virtual_machine':
         hyper_v.start(name)
         return core.generate_response_json_result('开机成功')
     elif action == 'shutdown_virtual_machine':

@@ -42,10 +42,11 @@ def get_due_date(name):
 
 def set_remarks(name, type_d, content):
     data = core.read('virtual_machine')
-    if name not in data:
-        data[name] = {}
-        data[name]['remarks'] = {}
-    data[name]['remarks'][type_d] = content
+    single_virtual_machine = data.get(name, {})
+    if 'remarks' not in single_virtual_machine:
+        single_virtual_machine['remarks'] = {}
+    single_virtual_machine['remarks'][type_d] = content
+    data[name] = single_virtual_machine
     core.write('virtual_machine', data)
 
 def get_use_user(account_number):

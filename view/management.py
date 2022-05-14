@@ -94,44 +94,11 @@ def ajax():
             data_single = data.get(data_count)
             information[data_count] = {
                 'state': data_single.get('state'),
-                'uptime': data_single.get('uptime'),
                 'account_number': virtual_machine.get_account_number(data_count),
                 'due_date': virtual_machine.get_due_date(data_count),
                 'remarks': virtual_machine.get_remarks(data_count, 'management')
             }
         return core.generate_response_json_result(information)
-    elif action == 'start_virtual_machine':
-        name = parameter.get('name')
-
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        hyper_v.start(name)
-        return core.generate_response_json_result('开机成功')
-    elif action == 'shutdown_virtual_machine':
-        name = parameter.get('name')
-        
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        hyper_v.shutdown(name)
-        return core.generate_response_json_result('关机成功')
-    elif action == 'force_shutdown_virtual_machine':
-        name = parameter.get('name')
-        
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        hyper_v.force_shutdown(name)
-        return core.generate_response_json_result('强制关机成功')
-    elif action == 'restart_virtual_machine':
-        name = parameter.get('name')
-
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        hyper_v.restart(name)
-        return core.generate_response_json_result('重启成功')
     elif action == 'get_virtual_machine_checkpoint':
         name = parameter.get('name')
     
@@ -145,61 +112,6 @@ def ajax():
         if checkpoint_information:
             checkpoint_information = checkpoint_information[:-1]
         return core.generate_response_json_result(checkpoint_information)
-    elif action == 'apply_virtual_machine_checkpoint':
-        name = parameter.get('name')
-        checkpoint_name = parameter.get('checkpoint_name')
-    
-        if auxiliary.empty_many(name, checkpoint_name):
-            return core.generate_response_json_result('参数错误')
-    
-        if checkpoint_name not in hyper_v.get_checkpoint(name):
-            return core.generate_response_json_result('检查点不存在')
-        hyper_v.apply_checkpoint(name, checkpoint_name)
-        return core.generate_response_json_result('恢复检查点成功')
-    elif action == 'rename_virtual_machine':
-        old_name = parameter.get('old_name')
-        new_name = parameter.get('new_name')
-        
-        if auxiliary.empty_many(old_name, new_name):
-            return core.generate_response_json_result('参数错误')
-        
-        hyper_v.rename(old_name, new_name)
-        
-        return core.generate_response_json_result('重命名成功')
-    elif action == 'remarks_virtual_machine':
-        name = parameter.get('name')
-        content = parameter.get('content')
-        
-        if auxiliary.empty_many(name, content):
-            return core.generate_response_json_result('参数错误')
-        
-        virtual_machine.set_remarks(name, 'management', content)
-        return core.generate_response_json_result('备注成功')
-    elif action == 'distribution_virtual_machine':
-        name = parameter.get('name')
-        account_number = parameter.get('account_number')
-
-        if auxiliary.empty(name):
-            return core.generate_response_json_result('参数错误')
-        
-        if account_number == '取消分配':
-            virtual_machine.set(name ,'account_number', '未分配')
-            return core.generate_response_json_result('取消分配成功')
-        else:
-            virtual_machine.set(name ,'account_number', account_number)
-            return core.generate_response_json_result('分配成功')
-    elif action == 'set_due_date_virtual_machine':
-        name = parameter.get('name')
-        due_date = parameter.get('due_date')
-
-        if auxiliary.empty_many(name, due_date):
-            return core.generate_response_json_result('参数错误')
-        
-        if due_date == '永久':
-            virtual_machine.set(name ,'due_timestamp', '永久')
-        else:
-            virtual_machine.set(name ,'due_timestamp', auxiliary.date_to_timestamp(due_date))
-        return core.generate_response_json_result('续费成功')
     elif action == 'revise_user_password':
         account_number = parameter.get('account_number')
         new_password = parameter.get('new_password')
@@ -242,7 +154,7 @@ def ajax():
             information = '请输入QQ帐号'
         else:
             user.register(account_number, password, qq_number)
-            information = '注册成功'
+            information = '添加成功'
         return core.generate_response_json_result(information)
     elif action == 'delete_user':
         account_number = parameter.get('account_number')
@@ -268,4 +180,79 @@ def ajax():
         core.set_core('description', description)
         core.set_core('notice', notice)
         return core.generate_response_json_result('修改成功')
+    
+    name = parameter.get('name')
+    
+    if auxiliary.empty(name):
+        name = parameter.get('old_name')
+        if auxiliary.empty(name):
+            return core.generate_response_json_result('参数错误')
+    
+    if name not in hyper_v.get():
+        return core.generate_response_json_result('虚拟机不存在')
+    
+    if action == 'start_virtual_machine':
+        hyper_v.start(name)
+        return core.generate_response_json_result('开机成功')
+    elif action == 'shutdown_virtual_machine':
+        hyper_v.shutdown(name)
+        return core.generate_response_json_result('关机成功')
+    elif action == 'force_shutdown_virtual_machine':
+        hyper_v.force_shutdown(name)
+        return core.generate_response_json_result('强制关机成功')
+    elif action == 'restart_virtual_machine':
+        hyper_v.restart(name)
+        return core.generate_response_json_result('重启成功')
+    elif action == 'apply_virtual_machine_checkpoint':
+        checkpoint_name = parameter.get('checkpoint_name')
+    
+        if auxiliary.empty(checkpoint_name):
+            return core.generate_response_json_result('参数错误')
+    
+        if checkpoint_name not in hyper_v.get_checkpoint(name):
+            return core.generate_response_json_result('检查点不存在')
+        hyper_v.apply_checkpoint(name, checkpoint_name)
+        return core.generate_response_json_result('恢复检查点成功')
+    elif action == 'rename_virtual_machine':
+        old_name = parameter.get('old_name')
+        new_name = parameter.get('new_name')
+        
+        if auxiliary.empty_many(old_name, new_name):
+            return core.generate_response_json_result('参数错误')
+        
+        if new_name in hyper.get() or new_name in core.read('virtual_machine'):
+            return core.generate_response_json_result('名称已存在')
+        hyper_v.rename(old_name, new_name)
+        return core.generate_response_json_result('重命名成功')
+    elif action == 'remarks_virtual_machine':
+        content = parameter.get('content')
+        
+        if auxiliary.empty(content):
+            return core.generate_response_json_result('参数错误')
+        
+        virtual_machine.set_remarks(name, 'management', content)
+        return core.generate_response_json_result('备注成功')
+    elif action == 'distribution_virtual_machine':
+        account_number = parameter.get('account_number')
+        
+        if auxiliary.empty(account_number):
+            return core.generate_response_json_result('参数错误')
+        
+        if account_number == '取消分配':
+            virtual_machine.set(name ,'account_number', '未分配')
+            return core.generate_response_json_result('取消分配成功')
+        else:
+            virtual_machine.set(name ,'account_number', account_number)
+            return core.generate_response_json_result('分配成功')
+    elif action == 'set_due_date_virtual_machine':
+        due_date = parameter.get('due_date')
+    
+        if auxiliary.empty_many(due_date):
+            return core.generate_response_json_result('参数错误')
+        
+        if due_date == '永久':
+            virtual_machine.set(name ,'due_timestamp', '永久')
+        else:
+            virtual_machine.set(name ,'due_timestamp', auxiliary.date_to_timestamp(due_date))
+        return core.generate_response_json_result('设置到期日期成功')
     return core.generate_response_json_result('参数错误')

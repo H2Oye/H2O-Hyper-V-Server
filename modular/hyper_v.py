@@ -7,24 +7,28 @@ import pythoncom
 from modular import virtual_machine
 
 def get():
-    data = str(subprocess.check_output(['powershell.exe', 'Get-VM'], shell=True), encoding='gbk')
+    pythoncom.CoInitialize()
+    CON = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
+    vm = CON.Msvm_ComputerSystem()
     information = {}
-    for data_count in data.splitlines():
-        if 'Off' in data_count or 'Running' in data_count:
-            data_count = data_count.split(' ')
-            data_count = [data_count_count for data_count_count in data_count if data_count_count != '']
-            state = data_count[1]
-            state = state.replace('Off', '关机')
-            state = state.replace('Running', '运行')
-            information[data_count[0]] = {
-                'state': state,
-                'uptime': data_count[4]
+    for vm_count in vm:
+        if vm_count.Caption == '虚拟机':
+            if vm_count.EnabledDefault == 2:
+                state = '运行'
+            elif vm_count.EnabledDefault == 3:
+                state = '关闭'
+            elif vm_count.EnabledDefault == 4:
+                state = '正在关闭'
+            elif vm_count.EnabledDefault == 10:
+                state = '正在启动'
+            elif vm_count.EnabledDefault == 11:
+                state = '正在重启'
+            else:
+                state = '未知'
+            information[vm_count.ElementName] = {
+                'state': state
             }
     return information
-
-def rename(old_name, new_name):
-    subprocess.check_output(['powershell.exe', f'Rename-VM "{old_name}" "{new_name}"'], shell=True)
-    virtual_machine.rename(old_name, new_name)
 
 def start(name):
     pythoncom.CoInitialize()
@@ -45,7 +49,11 @@ def restart(name):
     pythoncom.CoInitialize()
     CON = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
     vm = CON.Msvm_ComputerSystem(ElementName=name)
-    vm[0].RequestStateChange(11)
+    vm[0].RequestStateChange(10)
+
+def rename(old_name, new_name):
+    subprocess.check_output(['powershell.exe', f'Rename-VM "{old_name}" "{new_name}"'], shell=True)
+    virtual_machine.rename(old_name, new_name)
 
 def get_checkpoint(name):
     pythoncom.CoInitialize()
