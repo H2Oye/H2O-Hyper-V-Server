@@ -12,56 +12,27 @@
         </script>
         
         <script>
-            function get_user() {
-                var load = layer.load(0, {shade: false}),
-                    user = [];
-                
-                let post_data = {
-                    'action': 'get_user'
-                };
-                
-                axios.post('./ajax', post_data)
-                    .then(function(response) {
-                        data = response.data.information;
-                        for (let data_count in data) {
-                            user.push({
-                                'account_number': data_count,
-                                'password': data[data_count]['password'],
-                                'qq_number': data[data_count]['qq_number'],
-                                'register_date': data[data_count]['register_date']
-                            });
-                        }
-                        
-                        layui.use('table', function() {
-                            var table = layui.table;
-                            
-                            table.render({
-                                elem: '#table'
-                                ,cols: [[
-                                    {field: 'account_number', title: '帐号', width: 270}
-                                    ,{field: 'password', title: '密码(MD5)', width: 300}
-                                    ,{field: 'qq_number', title: 'QQ帐号', width: 250, sort: true}
-                                    ,{field: 'register_date', title: '注册日期', width: 270, sort: true}
-                                    ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 140}
-                                ]]
-                                ,toolbar: '#tool_bar'
-                                ,data: user
-                                ,page: true
-                            });
-                        });
-                        
-                        layer.close(load);
-                });
-            }
-            
-            get_user();
-            
             layui.use(['table', 'form'], function() {
                 var table = layui.table;
                 
+                table.render({
+                    elem: '#table'
+                    ,cols: [[
+                        {field: 'account_number', title: '帐号', width: 270}
+                        ,{field: 'password', title: '密码(MD5)', width: 300}
+                        ,{field: 'qq_number', title: 'QQ帐号', width: 250, sort: true}
+                        ,{field: 'register_date', title: '注册日期', width: 270, sort: true}
+                        ,{fixed: 'right', title: '操作', toolbar: '#bar', width: 140}
+                    ]]
+                    ,url: './ajax?action=get_user&format=layui'
+                    ,toolbar: '#tool_bar'
+                    ,page: true
+                    ,limit: 30
+                });
+                
                 table.on('toolbar(table)', function(obj) {
                     if (obj.event == 'refresh') {
-                        get_user();
+                        table.reload('table');
                         layer.msg('刷新成功');
                     } else if (obj.event == 'add_user') {
                         layer.open({
@@ -101,7 +72,7 @@
                                                 data = response.data.information;
                                                 layer.alert(data);
                                                 submit_button.disabled = false;
-                                                get_user();
+                                                table.reload('table');
                                         });
                                     }
                                     

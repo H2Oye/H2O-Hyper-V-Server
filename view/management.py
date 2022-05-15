@@ -88,17 +88,32 @@ def ajax():
             core.set_core('password', auxiliary.get_md5(new_password))
             return core.generate_response_json_result('修改成功')
     elif action == 'get_virtual_machine':
-        information = {}
+        format_d = parameter.get('format')
+        
         data = hyper_v.get()
-        for data_count in data:
-            data_single = data.get(data_count)
-            information[data_count] = {
-                'state': data_single.get('state'),
-                'account_number': virtual_machine.get_account_number(data_count),
-                'due_date': virtual_machine.get_due_date(data_count),
-                'remarks': virtual_machine.get_remarks(data_count, 'management')
-            }
-        return core.generate_response_json_result(information)
+        if format_d == 'layui':
+            information = []
+            for data_count in data:
+                data_single = data.get(data_count)
+                information.append({
+                    'name': data_count,
+                    'state': data_single.get('state'),
+                    'account_number': virtual_machine.get_account_number(data_count),
+                    'due_date': virtual_machine.get_due_date(data_count),
+                    'remarks': virtual_machine.get_remarks(data_count, 'management')
+                })
+            return core.generate_layui_response_json_result(information)
+        else:
+            information = {}
+            for data_count in data:
+                data_single = data.get(data_count)
+                information[data_count] = {
+                    'state': data_single.get('state'),
+                    'account_number': virtual_machine.get_account_number(data_count),
+                    'due_date': virtual_machine.get_due_date(data_count),
+                    'remarks': virtual_machine.get_remarks(data_count, 'management')
+                }
+            return core.generate_response_json_result(information)
     elif action == 'get_virtual_machine_checkpoint':
         name = parameter.get('name')
     
@@ -124,16 +139,30 @@ def ajax():
         user.set(account_number, 'password', auxiliary.get_md5(new_password))
         return core.generate_response_json_result('修改成功')
     elif action == 'get_user':
-        information = {}
+        format_d = parameter.get('format')
+        
         data = core.read('user')
-        for data_count in data:
-            data_single = data.get(data_count)
-            information[data_count] = {
-                'password': data_single.get('password'),
-                'qq_number': data_single.get('qq_number'),
-                'register_date': user.get_register_date(data_count)
-            }
-        return core.generate_response_json_result(information)
+        if format_d == 'layui':
+            information = []
+            for data_count in data:
+                data_single = data.get(data_count)
+                information.append({
+                    'account_number': data_count,
+                    'password': data_single.get('password'),
+                    'qq_number': data_single.get('qq_number'),
+                    'register_date': user.get_register_date(data_count)
+                })
+            return core.generate_layui_response_json_result(information)
+        else:
+            information = {}
+            for data_count in data:
+                data_single = data.get(data_count)
+                information[data_count] = {
+                    'password': data_single.get('password'),
+                    'qq_number': data_single.get('qq_number'),
+                    'register_date': user.get_register_date(data_count)
+                }
+            return core.generate_response_json_result(information)
     elif action == 'add_user':
         account_number = parameter.get('account_number')
         password = parameter.get('password')

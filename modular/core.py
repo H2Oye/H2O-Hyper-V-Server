@@ -38,6 +38,18 @@ def generate_response_json_result(information, state=200):
     response.mimetype = 'application/json; charset=utf-8'
     return response
 
+def generate_layui_response_json_result(information):
+    data = {
+        'code': 0,
+        'msg': '',
+        'count': len(information),
+        'data': information
+    }
+    data = auxiliary.json_to_text(data, False)
+    response = make_response(data)
+    response.mimetype = 'application/json; charset=utf-8'
+    return response
+
 def get_core(key):
     return read('core')[key]
 

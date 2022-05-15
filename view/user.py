@@ -64,16 +64,30 @@ def ajax():
                 user.set(account_number ,'qq_number', new_qq_number)
             return core.generate_response_json_result('修改成功')
     elif action == 'get_virtual_machine':
-        information = {}
+        format_d = parameter.get('format')
+        
         data = virtual_machine.get_use_user(account_number)
-        for data_count in data:
-            data_single = data.get(data_count)
-            information[data_count] = {
-                'state': data_single.get('state'),
-                'due_date': data_single.get('due_date'),
-                'remarks':data_single.get('remarks')
-            }
-        return core.generate_response_json_result(information)
+        if format_d == 'layui':
+            information = []
+            for data_count in data:
+                data_single = data.get(data_count)
+                information.append({
+                    'name': data_count,
+                    'state': data_single.get('state'),
+                    'due_date': data_single.get('due_date'),
+                    'remarks':data_single.get('remarks')
+                })
+            return core.generate_layui_response_json_result(information)
+        else:
+            information = {}
+            for data_count in data:
+                data_single = data.get(data_count)
+                information[data_count] = {
+                    'state': data_single.get('state'),
+                    'due_date': data_single.get('due_date'),
+                    'remarks':data_single.get('remarks')
+                }
+            return core.generate_response_json_result(information)
     
     name = parameter.get('name')
     vm = virtual_machine.get_use_user(account_number)
