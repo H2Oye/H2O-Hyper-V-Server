@@ -56,7 +56,7 @@
                                     
                                     if (!account_number || !password || !qq_number) {
                                         layer.close(load);
-                                        layer.msg('请输入完整信息');
+                                        layer.msg('信息错误');
                                         submit_button.disabled = false;
                                     } else {
                                         let post_data = {
@@ -71,8 +71,9 @@
                                                 layer.close(load);
                                                 data = response.data.information;
                                                 layer.alert(data);
-                                                submit_button.disabled = false;
                                                 table.reload('table');
+                                                submit_button.disabled = false;
+                                                layer.close(index);
                                         });
                                     }
                                     

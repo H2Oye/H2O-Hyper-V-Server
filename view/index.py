@@ -10,7 +10,6 @@ from modular import core, auxiliary, user
 
 INDEX_APP = Blueprint('INDEX_APP', __name__)
 
-
 @INDEX_APP.route('/')
 def redirect_d():
     return redirect('./login')

@@ -42,3 +42,14 @@ def timestamp_to_date(timestamp):
 
 def date_to_timestamp(date):
     return int(time.mktime(time.strptime(date, '%Y/%m/%d')))
+
+def get_middle_text(text, text_left='', text_right=''):
+    if not text_left:
+        return text.split(text_right)[1]
+    if not text_right:
+        return text.split(text_left)[1]
+    try:
+        data = text.split(text_left)[1].split(text_right)[0]
+    except Exception:
+        data = ''
+    return data

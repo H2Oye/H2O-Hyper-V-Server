@@ -55,7 +55,7 @@
                             
                             if (!title || !keyword || !description || !notice) {
                                 layer.close(load);
-                                layer.msg('请输入完整信息');
+                                layer.msg('信息错误');
                                 submit_button.disabled = false;
                             } else {
                                 let post_data = {

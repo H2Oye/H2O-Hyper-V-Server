@@ -6,12 +6,18 @@ from gevent import monkey
 monkey.patch_all()
 
 from flask import Flask, session, request, redirect
-import datetime
 import flask_cors
 from view.index import INDEX_APP
 from view.management import MANAGEMENT_APP
 from view.user import USER_APP
-from modular import core, virtual_machine, hyper_v
+from modular import core, virtual_machine
+
+import platform
+if platform.system().lower() == 'windows':
+    from modular import hyper_v_windows as hyper_v
+else:
+    from modular import hyper_v_other as hyper_v
+
 import threading
 import datetime
 import time
@@ -26,11 +32,11 @@ APP.register_blueprint(USER_APP)
 
 @APP.errorhandler(404)
 def errorhandler_404(error):
-    return '未找到文件'
+    return core.generate_response_json_result('未找到文件', 404)
 
 @APP.errorhandler(500)
 def errorhandler_500(error):
-    return '未知错误'
+    return core.generate_response_json_result('未知错误', 500)
 
 @APP.before_request
 def before_request():
@@ -55,6 +61,13 @@ def check():
         time.sleep(30)
 
 def initialization():
+    print('  _   _ ____   ___    _   _                         __     __')
+    print(' | | | |___ \ / _ \  | | | |_   _ _ __   ___ _ __   \ \   / /')
+    print(" | |_| | __) | | | | | |_| | | | | '_ \ / _ \ '__|___\ \ / / ")
+    print(' |  _  |/ __/| |_| | |  _  | |_| | |_) |  __/ | |_____\ V /  ')
+    print(' |_| |_|_____|\___/  |_| |_|\__, | .__/ \___|_|        \_/   ')
+    print('                            |___/|_|                         ')
+    
     thread = threading.Thread(target=check)
     thread.setDaemon(True)
     thread.start()

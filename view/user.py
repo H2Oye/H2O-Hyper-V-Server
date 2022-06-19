@@ -2,7 +2,13 @@
 # Author: XiaoXinYo
 
 from flask import Blueprint, redirect, render_template, request, session
-from modular import core, user, virtual_machine, auxiliary, hyper_v
+from modular import core, user, virtual_machine, auxiliary
+
+import platform
+if platform.system().lower() == 'windows':
+    from modular import hyper_v_windows as hyper_v
+else:
+    from modular import hyper_v_other as hyper_v
 
 USER_APP = Blueprint('USER_APP', __name__)
 
@@ -72,55 +78,57 @@ def ajax():
             for data_count in data:
                 data_single = data.get(data_count)
                 information.append({
-                    'name': data_count,
+                    'id': data_count,
+                    'name': data_single.get('name'),
+                    'state': data_single.get('state'),
+                    'cpu_count': data_single.get('cpu_count'),
+                    'memory_size': data_single.get('memory_size'),
                     'state': data_single.get('state'),
                     'due_date': data_single.get('due_date'),
                     'remarks':data_single.get('remarks')
                 })
             return core.generate_layui_response_json_result(information)
         else:
-            information = {}
-            for data_count in data:
-                data_single = data.get(data_count)
-                information[data_count] = {
-                    'state': data_single.get('state'),
-                    'due_date': data_single.get('due_date'),
-                    'remarks':data_single.get('remarks')
-                }
-            return core.generate_response_json_result(information)
+            return core.generate_response_json_result(data)
     
-    name = parameter.get('name')
+    id_d = parameter.get('id')
     vm = virtual_machine.get_use_user(account_number)
     
-    if auxiliary.empty(name):
+    if auxiliary.empty(id_d):
         return core.generate_response_json_result('参数错误')
     
-    if name not in hyper_v.get():
+    if not hyper_v.existence(id_d):
         return core.generate_response_json_result('虚拟机不存在')
-    elif name not in vm:
+    elif id_d not in vm:
         return core.generate_response_json_result('权限错误')
-    elif virtual_machine.is_due(name):
+    elif virtual_machine.is_due(id_d):
         return core.generate_response_json_result('该虚拟机已到期')
     
+    name = hyper_v.get_name(id_d)
+    
     if action == 'start_virtual_machine':
-        hyper_v.start(name)
-        return core.generate_response_json_result('开机成功')
+        if hyper_v.start(id_d):
+            return core.generate_response_json_result('开机成功')
+        return core.generate_response_json_result('开机失败')
     elif action == 'shutdown_virtual_machine':
-        hyper_v.shutdown(name)
-        return core.generate_response_json_result('关机成功')
+        if hyper_v.shutdown(id_d):
+            return core.generate_response_json_result('关机成功')
+        return core.generate_response_json_result('关机失败')
     elif action == 'force_shutdown_virtual_machine':
-        hyper_v.force_shutdown(name)
-        return core.generate_response_json_result('强制关机成功')
+        if hyper_v.force_shutdown(name):
+            return core.generate_response_json_result('强制关机成功')
+        return core.generate_response_json_result('强制关机失败')
     elif action == 'restart_virtual_machine':
-        hyper_v.restart(name)
-        return core.generate_response_json_result('重启成功')
+        if hyper_v.restart(id_d):
+            return core.generate_response_json_result('重启成功')
+        return core.generate_response_json_result('重启失败')
     elif action == 'get_virtual_machine_checkpoint':
         information = ''
-        checkpoint = hyper_v.get_checkpoint(name)
+        checkpoint = hyper_v.get_checkpoint(id_d)
         for checkpoint_count in checkpoint:
             information += checkpoint_count + '\n'
         if information:
-            information = checkpoint_information[:-1]
+            information = information[:-1]
         return core.generate_response_json_result(information)
     elif action == 'apply_virtual_machine_checkpoint':
         checkpoint_name = parameter.get('checkpoint_name')
@@ -128,16 +136,17 @@ def ajax():
         if auxiliary.empty(checkpoint_name):
             return core.generate_response_json_result('参数错误')
         
-        if checkpoint_name not in hyper_v.get_checkpoint(name):
+        if checkpoint_name not in hyper_v.get_checkpoint(id_d):
             return core.generate_response_json_result('检查点不存在')
-        hyper_v.apply_checkpoint(name, checkpoint_name)
-        return core.generate_response_json_result('恢复检查点成功')
+        if hyper_v.apply_checkpoint(id_d, checkpoint_name):
+            return core.generate_response_json_result('应用检查点成功')
+        return core.generate_response_json_result('应用检查点失败')
     elif action == 'remarks_virtual_machine':
         content = parameter.get('content')
         
         if auxiliary.empty(content):
             return core.generate_response_json_result('参数错误')
         
-        virtual_machine.set_remarks(name, 'user', content)
+        virtual_machine.set_remarks(id_d, 'user', content)
         return core.generate_response_json_result('备注成功')
     return core.generate_response_json_result('参数错误')
