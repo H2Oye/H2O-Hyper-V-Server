@@ -71,9 +71,26 @@ def ajax():
             return core.generate_response_json_result('修改成功')
     elif action == 'get_virtual_machine':
         format_d = parameter.get('format')
-        
+        page = parameter.get('page')
+        limit = parameter.get('limit')
+
+        if not page.isdigit() or not limit.isdigit():
+            return core.generate_response_json_result('参数错误')
+        page = int(page)
+        limit = int(limit)
+
+        if page < 0 or limit < 0:
+            return core.generate_response_json_result('参数错误')
+
         data = virtual_machine.get_use_user(account_number)
         if format_d == 'layui':
+            data_count_d = len(data)
+            if data_count_d == 0:
+                return core.generate_layui_response_json_result(0, {})
+            data = auxiliary.split_dict(data, limit)
+            if page > len(data):
+                return core.generate_response_json_result('参数错误')
+            data = hyper_v.compound(data[page-1])
             information = []
             for data_count in data:
                 data_single = data.get(data_count)
@@ -87,8 +104,9 @@ def ajax():
                     'due_date': data_single.get('due_date'),
                     'remarks':data_single.get('remarks')
                 })
-            return core.generate_layui_response_json_result(information)
+            return core.generate_layui_response_json_result(data_count_d, information)
         else:
+            data = hyper_v.compound(data)
             return core.generate_response_json_result(data)
     
     id_d = parameter.get('id')

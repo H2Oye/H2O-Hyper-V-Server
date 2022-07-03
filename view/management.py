@@ -79,7 +79,7 @@ def logout():
 def ajax():
     parameter = core.get_request_parameter(request)
     action = parameter.get('action')
-
+    
     if auxiliary.empty(action):
         return core.generate_response_json_result('参数错误')
 
@@ -96,9 +96,26 @@ def ajax():
             return core.generate_response_json_result('修改成功')
     elif action == 'get_virtual_machine':
         format_d = parameter.get('format')
-        
+        page = parameter.get('page')
+        limit = parameter.get('limit')
+
+        if not page.isdigit() or not limit.isdigit():
+            return core.generate_response_json_result('参数错误')
+        page = int(page)
+        limit = int(limit)
+
+        if page < 0 or limit < 0:
+            return core.generate_response_json_result('参数错误')
+
         data = hyper_v.get()
         if format_d == 'layui':
+            data_count_d = len(data)
+            if data_count_d == 0:
+                return core.generate_layui_response_json_result(0, {})
+            data = auxiliary.split_dict(data, limit)
+            if page > len(data):
+                return core.generate_response_json_result('参数错误')
+            data = hyper_v.compound(data[page-1])
             information = []
             for data_count in data:
                 data_single = data.get(data_count)
@@ -112,14 +129,15 @@ def ajax():
                     'due_date': virtual_machine.get_due_date(data_count),
                     'remarks': virtual_machine.get_remarks(data_count, 'management')
                 })
-            return core.generate_layui_response_json_result(information)
+            return core.generate_layui_response_json_result(data_count_d, information)
         else:
+            data = hyper_v.compound(data)
             information = {}
             for data_count in data:
                 information[data_count] = data.get(data_count)
-                information['account_number'] = virtual_machine.get_account_number(data_count),
-                information['due_date'] = virtual_machine.get_due_date(data_count),
-                information['remarks'] = virtual_machine.get_remarks(data_count, 'management')
+                information[data_count]['account_number'] = virtual_machine.get_account_number(data_count)
+                information[data_count]['due_date'] = virtual_machine.get_due_date(data_count)
+                information[data_count]['remarks'] = virtual_machine.get_remarks(data_count, 'management')
             return core.generate_response_json_result(information)
     elif action == 'revise_user_password':
         account_number = parameter.get('account_number')
@@ -134,9 +152,26 @@ def ajax():
         return core.generate_response_json_result('修改成功')
     elif action == 'get_user':
         format_d = parameter.get('format')
-        
+        page = parameter.get('page')
+        limit = parameter.get('limit')
+
+        if not page.isdigit() or not limit.isdigit():
+            return core.generate_response_json_result('参数错误')
+        page = int(page)
+        limit = int(limit)
+
+        if page < 0 or limit < 0:
+            return core.generate_response_json_result('参数错误')
+
         data = core.read('user')
         if format_d == 'layui':
+            data_count_d = len(data)
+            if data_count_d == 0:
+                return core.generate_layui_response_json_result(0, {})
+            data = auxiliary.split_dict(data, limit)
+            if page > len(data):
+                return core.generate_response_json_result('参数错误')
+            data = hyper_v.compound(data[page-1])
             information = []
             for data_count in data:
                 data_single = data.get(data_count)
@@ -146,16 +181,8 @@ def ajax():
                     'qq_number': data_single.get('qq_number'),
                     'register_date': user.get_register_date(data_count)
                 })
-            return core.generate_layui_response_json_result(information)
+            return core.generate_layui_response_json_result(data_count_d, information)
         else:
-            information = {}
-            for data_count in data:
-                data_single = data.get(data_count)
-                information[data_count] = {
-                    'password': data_single.get('password'),
-                    'qq_number': data_single.get('qq_number'),
-                    'register_date': user.get_register_date(data_count)
-                }
             return core.generate_response_json_result(information)
     elif action == 'add_user':
         account_number = parameter.get('account_number')

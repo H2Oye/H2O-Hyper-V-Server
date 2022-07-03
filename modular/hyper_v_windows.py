@@ -10,8 +10,6 @@ def get():
     pythoncom.CoInitialize()
     con = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
     vm = con.Msvm_ComputerSystem()
-    vm_memory = con.Msvm_MemorySettingData()
-    vm_cpu = con.Msvm_ProcessorSettingData()
     information = {}
     for vm_count in vm:
         if vm_count.Caption == '虚拟机':
@@ -31,17 +29,24 @@ def get():
                 'name': vm_count.ElementName,
                 'state': state
             }
+    return information
+
+def compound(data):
+    pythoncom.CoInitialize()
+    con = wmi.WMI(wmi=wmi.connect_server(server='127.0.0.1', namespace=r'root\virtualization\v2'))
+    vm_memory = con.Msvm_MemorySettingData()
+    vm_cpu = con.Msvm_ProcessorSettingData()
     for vm_cpu_count in vm_cpu:
         if vm_cpu_count.Description == 'Microsoft 虚拟处理器的设置。':
             id_d = auxiliary.get_middle_text(vm_cpu_count.InstanceID, 'Microsoft:', '\\')
-            if id_d in information:
-                information[id_d]['cpu_count'] = int(vm_cpu_count.VirtualQuantity)
+            if id_d in data:
+                data[id_d]['cpu_count'] = int(vm_cpu_count.VirtualQuantity)
     for vm_memory_count in vm_memory:
         if vm_memory_count.Description == 'Microsoft 虚拟机内存的设置。':
             id_d = auxiliary.get_middle_text(vm_memory_count.InstanceID, 'Microsoft:', '\\')
-            if id_d in information:
-                information[id_d]['memory_size'] = int(vm_memory_count.VirtualQuantity)
-    return information
+            if id_d in data:
+                data[id_d]['memory_size'] = int(vm_memory_count.VirtualQuantity)
+    return data
 
 def get_name(id_d):
     pythoncom.CoInitialize()

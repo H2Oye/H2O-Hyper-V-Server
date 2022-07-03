@@ -53,3 +53,18 @@ def get_middle_text(text, text_left='', text_right=''):
     except Exception:
         data = ''
     return data
+
+def split_dict(data, size):
+	list_d = []
+	dict_len = len(data)
+	# 获取分组数
+	while_count = dict_len // size + 1 if dict_len % size != 0 else dict_len / size
+	split_start = 0
+	split_end = size
+	while(while_count > 0):
+		# 把字典的键放到列表中,根据偏移量拆分字典
+		list_d.append({k: data[k] for k in list(data.keys())[split_start:split_end]})
+		split_start += size
+		split_end += size
+		while_count -= 1
+	return list_d

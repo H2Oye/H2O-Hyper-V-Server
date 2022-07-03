@@ -38,11 +38,11 @@ def generate_response_json_result(information, state=200):
     response.mimetype = 'application/json; charset=utf-8'
     return response
 
-def generate_layui_response_json_result(information):
+def generate_layui_response_json_result(count, information):
     data = {
         'code': 0,
         'msg': '',
-        'count': len(information),
+        'count': count,
         'data': information
     }
     data = auxiliary.json_to_text(data, False)

@@ -64,7 +64,7 @@ def get_use_user(account_number):
         if virtual_machine_data_count in hyper_v_data and virtual_machine_data.get(virtual_machine_data_count).get('account_number') == account_number:
             information[virtual_machine_data_count] = hyper_v_data.get(virtual_machine_data_count)
             information[virtual_machine_data_count]['due_date'] = get_due_date(virtual_machine_data_count)
-            information[virtual_machine_data_count]['remarks'] = virtual_machine_data.get(virtual_machine_data_count).get('remarks').get('user')
+            information[virtual_machine_data_count]['remarks'] = virtual_machine_data.get(virtual_machine_data_count).get('remarks', {}).get('user', '无')
     return information
 
 def reset_use_user(account_number):
@@ -76,4 +76,4 @@ def reset_use_user(account_number):
     core.write('virtual_machine', data)
 
 def get_remarks(id_d, type_d):
-    return core.read('virtual_machine').get(id_d, {}).get('remarks', {}).get(type_d)
+    return core.read('virtual_machine').get(id_d, {}).get('remarks', {}).get(type_d, '无')
