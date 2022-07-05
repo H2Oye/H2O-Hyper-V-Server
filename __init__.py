@@ -51,7 +51,7 @@ def check():
     while True:
         now_date = datetime.datetime.now()
         if now_date.hour == 0 and now_date.minute == 0:
-            virtual_machine_data = virtual_machine.get()
+            virtual_machine_data = core.read('virtual_machine')
             hyper_v_data = hyper_v.get()
             for virtual_machine_data_count in virtual_machine_data:
                 if virtual_machine_data_count in hyper_v_data:
