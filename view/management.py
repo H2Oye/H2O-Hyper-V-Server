@@ -249,9 +249,9 @@ def ajax():
             return core.generate_response_json_result('参数错误')
         
         if int(memory_size) % 2 != 0:
-            return core.generate_response_json_result('内存大小必须是2的倍数')
+            return core.generate_response_json_result('运行内存大小必须是2的倍数')
         elif int(memory_size) < 32:
-            return core.generate_response_json_result('内存大小必须大于32MB')
+            return core.generate_response_json_result('运行内存大小必须大于32MB')
         
         if hyper_v.get_state(id_d) != '关机':
             return core.generate_response_json_result('请先关机')

@@ -60,7 +60,7 @@
                                         title: '修改配置',
                                         type: 1,
                                         area: ['500px', '225px'],
-                                        content: '<div style="padding-top:15px; padding-right: 15px; padding-left: 15px; margin-top: auto;margin-right: auto; margin-left: auto;"><form class="layui-form layui-form-pane"><div class="layui-form-item"><label class="layui-form-label">CPU数量</label><div class="layui-input-block"><input type="number"name="cpu_count"autocomplete="off"placeholder="请输入CPU数量"class="layui-input"lay-verify="required"/></div></div><div class="layui-form-item"><label class="layui-form-label">内存大小(MB)</label><div class="layui-input-block"><input type="number"name="memory_size"autocomplete="off"placeholder="请输入内存大小(MB)"class="layui-input"lay-verify="required"/></div></div><div class="layui-form-item"><div class="layui-input-block"><button type="submit"id="submit_button"class="layui-btn"lay-submit=""lay-filter="submit_button">修改</button></div></div></form></div>',
+                                        content: '<div style="padding-top:15px; padding-right: 15px; padding-left: 15px; margin-top: auto;margin-right: auto; margin-left: auto;"><form class="layui-form layui-form-pane"><div class="layui-form-item"><label class="layui-form-label">处理器数量</label><div class="layui-input-block"><input type="number"name="cpu_count"autocomplete="off"placeholder="请输入处理器数量"class="layui-input"lay-verify="required"/></div></div><div class="layui-form-item"><label class="layui-form-label">内存大小(MB)</label><div class="layui-input-block"><input type="number"name="memory_size"autocomplete="off"placeholder="请输入内存大小(MB)"class="layui-input"lay-verify="required"/></div></div><div class="layui-form-item"><div class="layui-input-block"><button type="submit"id="submit_button"class="layui-btn"lay-submit=""lay-filter="submit_button">修改</button></div></div></form></div>',
                                         success: function(layero, index){
                                             var form = layui.form;
                                             
@@ -76,15 +76,15 @@
                                                 
                                                 if (!cpu_count || !memory_size || cpu_count == 0 || memory_size == 0) {
                                                     layer.close(load);
-                                                    layer.msg('信息错误');
+                                                    layer.msg('参数错误');
                                                     submit_button.disabled = false;
                                                 } else if (memory_size & 2 != 0) {
                                                     layer.close(load);
-                                                    layer.msg('内存大小必须是2的倍数');
+                                                    layer.msg('运行内存大小必须是2的倍数');
                                                     submit_button.disabled = false;
                                                 } else if (memory_size < 32) {
                                                     layer.close(load);
-                                                    layer.msg('内存大小必须大于32MB');
+                                                    layer.msg('运行内存大小必须大于32MB');
                                                     submit_button.disabled = false;
                                                 } else {
                                                     let post_data = {
