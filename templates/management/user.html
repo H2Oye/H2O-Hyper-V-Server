@@ -64,8 +64,7 @@
                                             'account_number': account_number,
                                             'password': password,
                                             'qq_number': qq_number
-                                        };
-                                                                
+                                        };                   
                                         axios.post('./ajax', post_data)
                                             .then(function(response) {
                                                 layer.close(load);
@@ -93,13 +92,12 @@
                             formType: 0
                             ,title: '输入框(新密码)'
                         }, function(value, index) {
+                            layer.close(index);
                             let post_data = {
                                 'action': 'revise_user_password',
                                 'account_number': account_number,
                                 'new_password': value
                             };
-                            
-                            layer.close(index);
                             axios.post('./ajax', post_data)
                                 .then(function(response) {
                                     if (response.data.information == '修改成功') {
@@ -116,7 +114,6 @@
                                     'action': 'delete_user',
                                     'account_number': account_number
                                 };
-                                
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         if (response.data.information == '修改成功') {

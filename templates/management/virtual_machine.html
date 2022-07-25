@@ -92,8 +92,7 @@
                                                         'id': id,
                                                         'cpu_count': cpu_count,
                                                         'memory_size': memory_size
-                                                    };
-                                                                            
+                                                    };               
                                                     axios.post('./ajax', post_data)
                                                         .then(function(response) {
                                                             layer.close(load);
@@ -117,12 +116,10 @@
                                 }
                             } else if (event == 'start') {
                                 var load = layer.load(0, {shade: false});
-                                
                                 let post_data = {
                                     'action': 'start_virtual_machine',
                                     'id': id
                                 };
-
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
@@ -133,12 +130,10 @@
                                 });
                             } else if (event == 'shutdown') {
                                 var load = layer.load(0, {shade: false});
-                                
                                 let post_data = {
                                     'action': 'shutdown_virtual_machine',
                                     'id': id
                                 };
-
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
@@ -149,12 +144,10 @@
                                 });
                             } else if (event == 'force_shutdown') {
                                 var load = layer.load(0, {shade: false});
-                                
                                 let post_data = {
                                     'action': 'force_shutdown_virtual_machine',
                                     'id': id
                                 };
-
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
@@ -165,12 +158,10 @@
                                 });
                             } else if (event == 'restart') {
                                 var load = layer.load(0, {shade: false});
-                                
                                 let post_data = {
                                     'action': 'restart_virtual_machine',
                                     'id': id
                                 };
-
                                 axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.close(load);
@@ -185,7 +176,6 @@
                                         'action': 'get_virtual_machine_checkpoint',
                                         'id': id
                                     };
-                                
                                     axios.post('./ajax', post_data)
                                     .then(function(response) {
                                         layer.prompt({
@@ -195,13 +185,11 @@
                                             ,area: ['250px', '300px']
                                         }, function(value, index) {
                                             var load = layer.load(0, {shade: false});
-                                            
                                             let post_data = {
                                                 'action': 'apply_virtual_machine_checkpoint',
                                                 'id': id,
                                                 'checkpoint_name': value
                                             };
-                                
                                             layer.close(index);
                                             axios.post('./ajax', post_data)
                                             .then(function(response) {
@@ -220,13 +208,11 @@
                                     ,value: name
                                 }, function(value, index) {
                                     var load = layer.load(0, {shade: false});
-                                    
                                     let post_data = {
                                         'action': 'rename_virtual_machine',
                                         'id': id,
                                         'new_name': value
                                     };
-                                
                                     layer.close(index);
                                     axios.post('./ajax', post_data)
                                         .then(function(response) {
@@ -245,13 +231,11 @@
                                     ,area: ['300px', '100px']
                                 }, function(value, index) {
                                     var load = layer.load(0, {shade: false});
-                                    
                                     let post_data = {
                                         'action': 'remarks_virtual_machine',
                                         'id': id,
                                         'content': value
                                     };
-                                    
                                     layer.close(index);
                                     axios.post('./ajax', post_data)
                                     .then(function(response) {
@@ -264,7 +248,6 @@
                                 });
                             } else if (event == 'distribution') {
                                 let account_number = obj.data.account_number;
-
                                 if (account_number == '未分配') {
                                     account_number = '';
                                 }
@@ -274,13 +257,11 @@
                                     ,value: account_number
                                 }, function(value, index) {
                                     var load = layer.load(0, {shade: false});
-                                    
                                     let post_data = {
                                         'action': 'distribution_virtual_machine',
                                         'id': id,
                                         'account_number': value
                                     };
-
                                     layer.close(index);
                                     axios.post('./ajax', post_data)
                                         .then(function(response) {
@@ -293,7 +274,6 @@
                                 });
                             } else {
                                 let due_date = obj.data.due_date;
-                                
                                 if (due_date == '永久') {
                                     due_date = '';
                                 }
@@ -303,13 +283,11 @@
                                     ,value: due_date
                                 }, function(value, index) {
                                     var load = layer.load(0, {shade: false});
-                                    
                                     let post_data = {
                                         'action': 'set_due_date_virtual_machine',
                                         'id': id,
                                         'due_date': value
                                     };
-                                    
                                     layer.close(index);
                                     axios.post('./ajax', post_data)
                                         .then(function(response) {
@@ -326,7 +304,6 @@
 
                     function state_color(data) {
                         var state = data.state;
-
                         if (state == '关机') {
                             return '<p style="color: red;">关机</p>';
                         } else if (state == '运行') {
