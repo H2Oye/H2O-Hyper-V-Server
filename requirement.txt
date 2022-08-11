@@ -16,3 +16,5 @@ pythoncom
 #platform
 #threading
 #base64
+#sys
+#ctypes

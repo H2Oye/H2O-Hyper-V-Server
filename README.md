@@ -6,6 +6,7 @@
 ## 需求
 1. 环境: Python3.
 2. 包: 见requirement.txt文件.
+3. 管理员权限运行.
 ## 配置(data/core.json)
 port的值代表端口号.
 ## 管理

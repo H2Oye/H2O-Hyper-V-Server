@@ -18,6 +18,8 @@ if platform.system().lower() == 'windows':
 else:
     from modular import hyper_v_other as hyper_v
 
+import ctypes
+import sys
 import threading
 import datetime
 import time
@@ -61,6 +63,13 @@ def check():
         time.sleep(30)
 
 def initialization():
+    if platform.system().lower() == 'windows':
+        try:
+            ctypes.windll.shell32.IsUserAnAdmin()
+        except Exception:
+            if sys.version_info[0] == 3:
+                ctypes.windll.shell32.ShellExecuteW(None, 'runas', sys.executable, __file__, None, 1)
+    
     print('  _   _ ____   ___    _   _                         __     __')
     print(' | | | |___ \ / _ \  | | | |_   _ _ __   ___ _ __   \ \   / /')
     print(" | |_| | __) | | | | | |_| | | | | '_ \ / _ \ '__|___\ \ / / ")
