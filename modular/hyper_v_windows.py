@@ -153,6 +153,7 @@ def get_checkpoint(id_d):
     vm = vm[0]
     checkpoint = vm.associators(wmi_result_class='Msvm_VirtualSystemSettingData')
     information = []
+    name = get_name(id_d)
     for checkpoint_count in checkpoint:
         information.append(checkpoint_count.ElementName)
     if information == [name]:
