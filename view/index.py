@@ -14,7 +14,6 @@ INDEX_APP = Blueprint('INDEX_APP', __name__)
 def redirect_d():
     return redirect('./login')
 
-
 @INDEX_APP.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('account_number'):
