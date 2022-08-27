@@ -7,6 +7,7 @@ monkey.patch_all()
 
 from flask import Flask, session, request, redirect
 import flask_cors
+import flask_apscheduler
 from view.index import INDEX_APP
 from view.management import MANAGEMENT_APP
 from view.user import USER_APP
@@ -20,13 +21,13 @@ else:
 
 import ctypes
 import sys
-import threading
 import datetime
 import time
 
 APP = Flask(__name__)
 APP.config['SECRET_KEY'] = 'h2o_hyper_v'
 APP.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
+scheduler = flask_apscheduler.APScheduler()
 flask_cors.CORS(APP, resources=r'/*')
 APP.register_blueprint(INDEX_APP)
 APP.register_blueprint(MANAGEMENT_APP)
@@ -49,18 +50,15 @@ def before_request():
     elif (not account_number or account_number == 'admin') and url[1] == 'user':
         return redirect('../login')
 
+@scheduler.task('cron', hour=0, minute=0)
 def check():
-    while True:
-        now_date = datetime.datetime.now()
-        if now_date.hour == 0 and now_date.minute == 0:
-            virtual_machine_data = core.read('virtual_machine')
-            hyper_v_data = hyper_v.get()
-            for virtual_machine_data_count in virtual_machine_data:
-                if virtual_machine_data_count in hyper_v_data:
-                    if virtual_machine.is_due(virtual_machine_data_count) and hyper_v_data.get(virtual_machine_data_count).get('state') != '关机':
-                        hyper_v.shutdown(virtual_machine_data_count)
-                    time.sleep(10)
-        time.sleep(30)
+    virtual_machine_data = core.read('virtual_machine')
+    hyper_v_data = hyper_v.get()
+    for virtual_machine_data_count in virtual_machine_data:
+        if virtual_machine_data_count in hyper_v_data:
+            if virtual_machine.is_due(virtual_machine_data_count) and hyper_v_data.get(virtual_machine_data_count).get('state') != '关机':
+                hyper_v.shutdown(virtual_machine_data_count)
+                time.sleep(5)
 
 def initialization():
     if platform.system().lower() == 'windows':
@@ -77,11 +75,10 @@ def initialization():
     print(' |_| |_|_____|\___/  |_| |_|\__, | .__/ \___|_|        \_/   ')
     print('                            |___/|_|                         ')
     
-    thread = threading.Thread(target=check)
-    thread.setDaemon(True)
-    thread.start()
+    scheduler.init_app(APP)
+    scheduler.start()
 
 if __name__ == '__main__':
     initialization()
-    #APP.run(host='0.0.0.0', port=core.get_core('port'), debug=True, processes=True)
-    WSGIServer(('0.0.0.0', core.get_core('port')), APP).serve_forever()
+    #APP.run(host=core.getCore('host'), port=core.getCore('port'), debug=True, processes=True)
+    WSGIServer((core.getCore('host'), core.getCore('port')), APP).serve_forever()

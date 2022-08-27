@@ -85,7 +85,8 @@ def get_state(id_d):
         state = '未知'
     return state
 
-def revise_config(name, cpu_count, memory_size):
+def revise_config(id_d, cpu_count, memory_size):
+    name = get_name(id_d)
     try:
         subprocess.check_output(['powershell.exe', f'Set-VMProcessor -VMName "{name}" -Count {cpu_count};Set-VMMemory -VMName "{name}" -StartupBytes {memory_size}MB'], shell=True)
     except Exception:
@@ -115,7 +116,8 @@ def shutdown(id_d):
     vm[0].RequestStateChange(3)
     return True
 
-def force_shutdown(name):
+def force_shutdown(id_d):
+    name = get_name(id_d)
     try:
         subprocess.check_output(['powershell.exe', f'Stop-VM -Name "{name}" –Force'], shell=True)
     except Exception:
@@ -134,7 +136,8 @@ def restart(id_d):
     vm[0].RequestStateChange(10)
     return True
 
-def rename(old_name, new_name):
+def rename(id_d, new_name):
+    old_name = get_name(id_d)
     try:
         subprocess.check_output(['powershell.exe', f'Rename-VM "{old_name}" "{new_name}"'], shell=True)
     except Exception:

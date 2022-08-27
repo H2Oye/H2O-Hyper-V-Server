@@ -12,15 +12,13 @@ else:
 
 USER_APP = Blueprint('USER_APP', __name__)
 
-@USER_APP.route('/user/', methods=['GET', 'POST'])
-def redirect_d():
-    return redirect('./index')
 
-@USER_APP.route('/user/index', methods=['GET', 'POST'])
-def index():
+@USER_APP.route('/user/dashboard', methods=['GET', 'POST'])
+@USER_APP.route('/user/', methods=['GET', 'POST'])
+def dashboard():
     account_number = session.get('account_number')
     return render_template(
-        'user/index.html',
+        'user/dashboard.html',
         title=core.get_core('title'),
         keyword=core.get_core('keyword'),
         description=core.get_core('description'),

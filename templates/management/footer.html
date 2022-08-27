@@ -29,7 +29,11 @@
             }
 
             function refresh_nav() {
-                nav_active('nav', window.location.pathname.split('/')[2]);
+                id = window.location.pathname.split('/')[1];
+                if (!id) {
+                    id = 'dashboard';
+                }
+                nav_active('nav', id);
             }
 
             $(document).ready(function() {

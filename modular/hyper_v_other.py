@@ -67,34 +67,33 @@ def compound(data):
 def get_name(id_d):
     return '新建虚拟机'
 
-def existence(name):
+def existence(id_d):
     return True
 
-def get_state(name):
+def get_state(id_d):
     return '运行'
 
-def revise_config(name, cpu_count, memory_size):
+def revise_config(id_d, cpu_count, memory_size):
     return True
 
-def start(name):
+def start(id_d):
     return True
 
-def shutdown(name):
+def shutdown(id_d):
     return True
 
-def force_shutdown(name):
+def force_shutdown(id_d):
     return True
 
-def restart(name):
+def restart(id_d):
     return True
 
-def rename(old_name, new_name):
-    virtual_machine.rename(old_name, new_name)
+def rename(id_d, new_name):
     return True
 
-def get_checkpoint(name):
+def get_checkpoint(id_d):
     information = ['新建检查点']
     return information
 
-def apply_checkpoint(name, checkpoint_name):
+def apply_checkpoint(id_d, checkpoint_name):
     return True

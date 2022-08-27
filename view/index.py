@@ -10,11 +10,8 @@ from modular import core, auxiliary, user
 
 INDEX_APP = Blueprint('INDEX_APP', __name__)
 
-@INDEX_APP.route('/')
-def redirect_d():
-    return redirect('./login')
-
 @INDEX_APP.route('/login', methods=['GET', 'POST'])
+@INDEX_APP.route('/')
 def login():
     if session.get('account_number'):
         if session.get('account_number') == 'admin':

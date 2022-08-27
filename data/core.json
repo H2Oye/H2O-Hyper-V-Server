@@ -1,1 +1,9 @@
-{"port": 3020, "title": "\u6c27\u5316\u6c22Hyper-V", "keyword": "\u6c27\u5316\u6c22Hyper-V", "description": "\u4e00\u5207\u662f\u90a3\u4e48\u7684\u7b80\u7ea6\u9ad8\u6548.", "notice": "566A57qmCumrmOaViA==", "password": "25d55ad283aa400af464c76d713c07ad"}
+{
+    "host": "0.0.0.0",
+    "port": 5000,
+    "title": "\u6c27\u5316\u6c22Hyper-V",
+    "keyword": "\u6c27\u5316\u6c22Hyper-V",
+    "description": "\u4e00\u5207\u662f\u90a3\u4e48\u7684\u7b80\u7ea6\u9ad8\u6548.",
+    "notice": "566A57qmCumrmOaViA==",
+    "password": "25d55ad283aa400af464c76d713c07ad"
+}

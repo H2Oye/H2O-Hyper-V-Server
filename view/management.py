@@ -18,15 +18,12 @@ import datetime
 import base64
 
 MANAGEMENT_APP = Blueprint('MANAGEMENT_APP', __name__)
-
-@MANAGEMENT_APP.route('/management/')
-def redirect_d():
-    return redirect('./index')
     
-@MANAGEMENT_APP.route('/management/index', methods=['GET', 'POST'])
-def index():
+@MANAGEMENT_APP.route('/management/dashboard', methods=['GET', 'POST'])
+@MANAGEMENT_APP.route('/management/')
+def dashboard():
     return render_template(
-        'management/index.html',
+        'management/dashboard.html',
         title=core.get_core('title'),
         keyword=core.get_core('keyword'),
         description=core.get_core('description'),

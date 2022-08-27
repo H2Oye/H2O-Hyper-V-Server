@@ -1,0 +1,139 @@
+{%include './user/header.html' %}
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">状态</li>
+                        <li>修改</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            
+                            <div class="layui-bg-gray" style="padding: 5px;">
+                                <div class="layui-row layui-col-space10">
+                                    
+                                    <div class="layui-col-md12">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">公告</div>
+                                            <div class="layui-card-body">
+                                                {% for notice_count in notice %}
+                                                    <p>{{ notice_count }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">账号</div>
+                                            <div class="layui-card-body">{{ account_number }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">密码(MD5)</div>
+                                            <div class="layui-card-body">
+                                                <p id="password">{{ password }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">QQ帐号</div>
+                                            <div class="layui-card-body">
+                                                <p id="qq_number">{{ qq_number }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">注册日期</div>
+                                            <div class="layui-card-body">{{ register_date }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">虚拟机</div>
+                                            <div class="layui-card-body">{{ virtual_machine_number }} 个</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="layui-tab-item">
+                            <blockquote class="layui-elem-quote">不需要修改的留空.</blockquote>
+                            
+                            <form class="layui-form layui-form-pane">
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">新密码</label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="new_password" autocomplete="off" placeholder="新密码" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">新QQ帐号</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="new_qq_number" autocomplete="off" placeholder="QQ帐号" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="submit" id="submit_button" class="layui-btn" lay-submit="" lay-filter="submit_button">修改</button>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    layui.use(['form'], function() {
+                        var form = layui.form;
+                        
+                        form.on('submit(submit_button)', function(data) {
+                            data = data.field;
+                            
+                            var load = layer.load(0, {shade: false}),
+                                submit_button = document.getElementById('submit_button'),
+                                new_password = data.new_password,
+                                new_qq_number = data.new_qq_number;
+                            
+                            submit_button.disabled = true;
+                            
+                            if (!new_password && !new_qq_number) {
+                                layer.close(load);
+                                layer.msg('不能全部为空');
+                                submit_button.disabled = false;
+                            } else {
+                                let post_data = {
+                                    'action': 'revise_account',
+                                    'new_password': new_password,
+                                    'new_qq_number': new_qq_number
+                                };
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        if (response.data.information == '修改成功') {
+                                            document.getElementById('password').innerHTML = md5(new_password);
+                                            document.getElementById('qq_number').innerHTML = new_qq_number;
+                                        }
+                                        layer.alert(response.data.information);
+                                        submit_button.disabled = false;
+                                });
+                            }
+                            
+                            return false;
+                        });
+                    });
+                </script>
+{%include 'user/footer.html' %}

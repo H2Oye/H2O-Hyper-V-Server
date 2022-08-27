@@ -1,0 +1,116 @@
+{%include './management/header.html' %}
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">状态</li>
+                        <li>修改</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            
+                            <div class="layui-bg-gray" style="padding: 5px;">
+                                <div class="layui-row layui-col-space10">
+
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">CPU核心</div>
+                                            <div class="layui-card-body">{{ cpu_number }} 个</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">运行内存</div>
+                                            <div class="layui-card-body">{{ memory_size }} GB</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">操作系统</div>
+                                            <div class="layui-card-body">{{ operating_system }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">虚拟机</div>
+                                            <div class="layui-card-body">{{ virtual_machine_number }} 个</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">分配虚拟机</div>
+                                            <div class="layui-card-body">{{ distribution_virtual_machine_number }} 个</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="layui-col-md3">
+                                        <div class="layui-card">
+                                            <div class="layui-card-header">用户</div>
+                                            <div class="layui-card-body">{{ user_number }} 个</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="layui-tab-item">
+                            
+                            <form class="layui-form layui-form-pane">
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">新密码</label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="new_password" autocomplete="off" placeholder="新密码" class="layui-input">
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="submit" id="submit_button" class="layui-btn" lay-submit="" lay-filter="submit_button">修改</button>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    layui.use(['form'], function() {
+                        var form = layui.form;
+                        
+                        form.on('submit(submit_button)', function(data) {
+                            data = data.field;
+                            
+                            var load = layer.load(0, {shade: false}),
+                                submit_button = document.getElementById('submit_button'),
+                                new_password = data.new_password;
+                            
+                            submit_button.disabled = true;
+                            
+                            if (!new_password) {
+                                layer.close(load);
+                                layer.msg('请输入新密码');
+                                submit_button.disabled = false;
+                            } else {
+                                let post_data = {
+                                    'action': 'revise_password',
+                                    'new_password': new_password
+                                };
+                                axios.post('./ajax', post_data)
+                                    .then(function(response) {
+                                        layer.close(load);
+                                        layer.alert(response.data.information);
+                                        submit_button.disabled = false;
+                                });
+                            }
+                            
+                            return false;
+                        });
+                    });
+                </script>
+{%include 'management/footer.html' %}

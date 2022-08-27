@@ -12,9 +12,12 @@ else:
 import time
 
 def is_due(id_d):
-    if int(time.time()) > get_due_timestamp(id_d):
-        return True
-    return False
+    due_timestamp = get_due_timestamp(id_d)
+    if due_timestamp:
+        if int(time.time()) > due_timestamp:
+            return True
+        return False
+    return True
 
 def set(id_d, key, value):
     data = core.read('virtual_machine')
@@ -32,17 +35,14 @@ def get_account_number(id_d):
 def get_due_timestamp(id_d):
     data = core.read('virtual_machine')
     if id_d in data:
-        due_timestamp = data.get(id_d).get('due_timestamp', '永久')
-        if due_timestamp == '永久':
-            return 3093527923200
-        return due_timestamp
-    return 3093527923200
+        return data.get(id_d).get('due_timestamp', 0)
+    return 0
 
 def get_due_date(id_d):
     data = core.read('virtual_machine')
     if id_d in data:
-        due_timestamp = data.get(id_d).get('due_timestamp', '永久')
-        if due_timestamp == '永久':
+        due_timestamp = data.get(id_d).get('due_timestamp', 0)
+        if due_timestamp:
             return '永久'
         return auxiliary.timestamp_to_date(due_timestamp)
     return '永久'
@@ -72,7 +72,7 @@ def reset_use_user(account_number):
     for data_count in get_use_user(account_number):
         data[data_count]['account_number'] = '未分配'
         data[data_count]['remarks']['user'] = ''
-        data[data_count]['due_timestamp'] = '永久'
+        data[data_count]['due_timestamp'] = 0
     core.write('virtual_machine', data)
 
 def get_remarks(id_d, type_d):
