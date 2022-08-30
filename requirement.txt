@@ -1,8 +1,0 @@
-gevent
-flask
-flask_cors
-captcha
-hashlib
-multiprocessing
-psutil
-wmi
