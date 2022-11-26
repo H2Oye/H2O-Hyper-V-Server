@@ -6,8 +6,8 @@ from gevent import monkey
 monkey.patch_all()
 
 from flask import Flask, session, request, redirect
-import flask_cors
 import flask_apscheduler
+import flask_cors
 from view.index import INDEX_APP
 from view.management import MANAGEMENT_APP
 from view.user import USER_APP
@@ -68,12 +68,14 @@ def initialization():
             if sys.version_info[0] == 3:
                 ctypes.windll.shell32.ShellExecuteW(None, 'runas', sys.executable, __file__, None, 1)
     
-    print('  _   _ ____   ___    _   _                         __     __')
-    print(' | | | |___ \ / _ \  | | | |_   _ _ __   ___ _ __   \ \   / /')
-    print(" | |_| | __) | | | | | |_| | | | | '_ \ / _ \ '__|___\ \ / / ")
-    print(' |  _  |/ __/| |_| | |  _  | |_| | |_) |  __/ | |_____\ V /  ')
-    print(' |_| |_|_____|\___/  |_| |_|\__, | .__/ \___|_|        \_/   ')
-    print('                            |___/|_|                         ')
+    print('''
+ _   _ ____   ___    _   _                         __     __
+| | | |___ \ / _ \  | | | |_   _ _ __   ___ _ __   \ \   / /
+| |_| | __) | | | | | |_| | | | | '_ \ / _ \ '__|___\ \ / / 
+|  _  |/ __/| |_| | |  _  | |_| | |_) |  __/ | |_____\ V /  
+|_| |_|_____|\___/  |_| |_|\__, | .__/ \___|_|        \_/   
+                           |___/|_|
+    ''')
     
     scheduler.init_app(APP)
     scheduler.start()
