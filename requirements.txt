@@ -1,5 +1,6 @@
 gevent
 flask
+flask_apscheduler
 flask_cors
 captcha
 hashlib
